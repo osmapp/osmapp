@@ -120,18 +120,16 @@ const ComboBoxChoices = ({
 const CloseButton = ({ closePanel }: { closePanel: () => void }) => {
   const { featureShown } = useFeatureContext();
   return (
-    <>
-      {featureShown && (
-        <button
-          type="button"
-          onClick={closePanel}
-          className="flex items-center justify-center w-full h-full"
-        >
-          <span className="sr-only">Close</span>
-          <XMarkIcon className="h-6 w-6 text-zinc-700 dark:text-zinc-400" />
-        </button>
-      )}
-    </>
+    featureShown && (
+      <button
+        type="button"
+        onClick={closePanel}
+        className="flex items-center justify-center w-full h-full"
+      >
+        <span className="sr-only">Close</span>
+        <XMarkIcon className="h-6 w-6 text-zinc-700 dark:text-zinc-400" />
+      </button>
+    )
   );
 };
 
