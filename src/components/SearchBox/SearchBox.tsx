@@ -22,29 +22,45 @@ interface Choice {
   };
 }
 
-const SearchIcon = () => (
-  <div className="absolute top-0 bottom-0 left-0 flex items-center justify-center pointer-events-none text-zinc-400 aspect-square">
-    <MagnifyingGlassIcon className="h-6 w-6" />
-  </div>
-);
+const useFetchChoices = (
+  query: string,
+  setChoices: (value: Choice[]) => void,
+  setSelectedChoice: (value: Choice | null) => void,
+) => {
+  const { view } = useMapStateContext();
+  useEffect(() => {
+    if (query === '') {
+      setChoices([]);
+      setSelectedChoice(null);
+      return;
+    }
+    // fetch choices
+    fetchChoices(query, view, setChoices);
+  }, [query]);
+};
 
-const CloseButton = ({ closePanel }: { closePanel: () => void }) => {
-  const { featureShown } = useFeatureContext();
+const useGetClosePanel = (setQuery: (value: string) => void) => {
+  const mobileMode = useMobileMode();
+  const { feature, setFeature, setPreview } = useFeatureContext();
 
-  return (
-    <div className="absolute top-0 bottom-0 right-0 aspect-square">
-      {featureShown && (
-        <button
-          type="button"
-          onClick={closePanel}
-          className="flex items-center justify-center w-full h-full"
-        >
-          <span className="sr-only">Close</span>
-          <XMarkIcon className="h-6 w-6 text-zinc-700 dark:text-zinc-400" />
-        </button>
-      )}
-    </div>
-  );
+  return () => {
+    setQuery('');
+    if (mobileMode) {
+      setPreview(feature);
+    }
+    setFeature(null);
+    Router.push(`/${window.location.hash}`);
+  };
+};
+
+const useOnSelectedChoice = (selectedChoice: Choice) => {
+  const mobileMode = useMobileMode();
+  const { setFeature, setPreview } = useFeatureContext();
+
+  useEffect(() => {
+    if (selectedChoice === null) return;
+    onSelected(setFeature, setPreview, mobileMode, selectedChoice);
+  }, [selectedChoice]);
 };
 
 const SearchInput = ({
@@ -86,7 +102,6 @@ const ComboBoxChoices = ({
   <Combobox.Options className="rounded-md overflow-y-auto shadow-md shadow-black/20 z-10 scrollbar-thin scrollbar-track-white dark:scrollbar-track-zinc-800 scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600 scrollbar-thumb-rounded-full">
     {choices.map((choice) => (
       <Combobox.Option key={choice.id} value={choice}>
-        {/* TODO replace with a new component */}
         {({ active }) => (
           <li
             className={`flex justify-between p-2 transition duration-10 ${
@@ -103,46 +118,22 @@ const ComboBoxChoices = ({
   </Combobox.Options>
 );
 
-const useFetchChoices = (
-  query: string,
-  setChoices: (value: Choice[]) => void,
-  setSelectedChoice: (value: Choice | null) => void,
-) => {
-  const { view } = useMapStateContext();
-  useEffect(() => {
-    // reset if query is empty
-    if (query === '') {
-      setChoices([]);
-      setSelectedChoice(null);
-      return;
-    }
-    // fetch choices
-    fetchChoices(query, view, setChoices);
-  }, [query]);
-};
-
-const useGetClosePanel = (setQuery: (value: string) => void) => {
-  const mobileMode = useMobileMode();
-  const { feature, setFeature, setPreview } = useFeatureContext();
-
-  return () => {
-    setQuery('');
-    if (mobileMode) {
-      setPreview(feature);
-    }
-    setFeature(null);
-    Router.push(`/${window.location.hash}`);
-  };
-};
-
-const useOnSelectedChoice = (selectedChoice: Choice) => {
-  const mobileMode = useMobileMode();
-  const { setFeature, setPreview } = useFeatureContext();
-
-  useEffect(() => {
-    if (selectedChoice === null) return;
-    onSelected(setFeature, setPreview, mobileMode, selectedChoice);
-  }, [selectedChoice]);
+const CloseButton = ({ closePanel }: { closePanel: () => void }) => {
+  const { featureShown } = useFeatureContext();
+  return (
+    <>
+      {featureShown && (
+        <button
+          type="button"
+          onClick={closePanel}
+          className="flex items-center justify-center w-full h-full"
+        >
+          <span className="sr-only">Close</span>
+          <XMarkIcon className="h-6 w-6 text-zinc-700 dark:text-zinc-400" />
+        </button>
+      )}
+    </>
+  );
 };
 
 const SearchBox = () => {
@@ -157,9 +148,13 @@ const SearchBox = () => {
   return (
     <Combobox value={selectedChoice} onChange={setSelectedChoice}>
       <div className="relative">
-        <SearchIcon />
+        <div className="absolute top-0 bottom-0 left-0 flex items-center justify-center pointer-events-none text-zinc-400 aspect-square">
+          <MagnifyingGlassIcon className="h-6 w-6" />
+        </div>
+        <div className="absolute top-0 bottom-0 right-0 aspect-square">
+          <CloseButton closePanel={closePanel} />
+        </div>
         <SearchInput query={query} setQuery={setQuery} />
-        <CloseButton closePanel={closePanel} />
       </div>
       <ComboBoxChoices choices={choices} query={query} />
     </Combobox>
