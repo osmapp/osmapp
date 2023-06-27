@@ -34,7 +34,6 @@ const useFetchChoices = (
       setSelectedChoice(null);
       return;
     }
-    // fetch choices
     fetchChoices(query, view, setChoices);
   }, [query]);
 };
@@ -99,7 +98,7 @@ const ComboBoxChoices = ({
   choices: Choice[];
   query: string;
 }) => (
-  <Combobox.Options className="rounded-md overflow-y-auto shadow-md shadow-black/20 z-10 scrollbar-thin scrollbar-track-white dark:scrollbar-track-zinc-800 scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600 scrollbar-thumb-rounded-full">
+  <>
     {choices.map((choice) => (
       <Combobox.Option key={choice.id} value={choice}>
         {({ active }) => (
@@ -115,7 +114,7 @@ const ComboBoxChoices = ({
         )}
       </Combobox.Option>
     ))}
-  </Combobox.Options>
+  </>
 );
 
 const CloseButton = ({ closePanel }: { closePanel: () => void }) => {
@@ -156,7 +155,9 @@ const SearchBox = () => {
         </div>
         <SearchInput query={query} setQuery={setQuery} />
       </div>
-      <ComboBoxChoices choices={choices} query={query} />
+      <Combobox.Options className="rounded-md overflow-y-auto shadow-md shadow-black/20 z-10 scrollbar-thin scrollbar-track-white dark:scrollbar-track-zinc-800 scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600 scrollbar-thumb-rounded-full">
+        <ComboBoxChoices choices={choices} query={query} />
+      </Combobox.Options>
     </Combobox>
   );
 };
