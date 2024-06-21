@@ -7,7 +7,7 @@ const StyledLayerSwitcher = styled.button`
   margin: 0;
   padding: 0;
   width: 52px;
-  height: 69px;
+  height: 67px;
   border-radius: 5px;
   border: 0;
   box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);

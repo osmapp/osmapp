@@ -66,10 +66,10 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   .maplibregl-ctrl-top-right {
-    top: ${83 + 72}px !important;
+    top: ${120 + 72}px !important;
 
     @media ${isDesktop} {
-      top: 83px !important;
+      top: 120px !important;
     }
   }
 

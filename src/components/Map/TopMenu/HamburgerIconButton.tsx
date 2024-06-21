@@ -1,5 +1,5 @@
 import { IconButton } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React from 'react';
 import styled from 'styled-components';
 import { t } from '../../../services/intl';
@@ -22,6 +22,6 @@ export const HamburgerIconButton = ({ anchorRef, onClick }) => (
     color="secondary"
     onClick={onClick}
   >
-    <MenuIcon />
+    <ExpandMoreIcon />
   </StyledIconButton>
 );

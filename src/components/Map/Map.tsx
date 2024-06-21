@@ -40,6 +40,9 @@ const TopRight = styled.div`
   padding: 10px;
   right: 0;
   top: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 
   @media ${isDesktop} {
     top: 0;
