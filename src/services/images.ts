@@ -3,6 +3,7 @@ import { getFodyImage } from './images/getFodyImage';
 import { getMapillaryImage } from './images/getMapillaryImage';
 import { getWikiApiUrl, getWikiImage } from './images/getWikiImage';
 import { Feature, Image } from './types';
+import { getOgImage } from './images/getOgImage';
 
 export const LOADING = null;
 
@@ -58,7 +59,22 @@ export const getFeatureImage = async (feature: Feature): Promise<Image> => {
   }
 
   // fallback to mapillary
-  return (
-    mapillaryPromise ?? (center ? await getMapillaryImage(center) : undefined)
-  );
+  if (center) {
+    const mapillaryImage = mapillaryPromise
+      ? await mapillaryPromise
+      : await getMapillaryImage(center);
+    if (mapillaryImage) {
+      return mapillaryImage;
+    }
+  }
+
+  // lets try luck with og:image
+  if (tags?.website) {
+    const ogImage = await getOgImage(tags.website);
+    if (ogImage) {
+      return ogImage;
+    }
+  }
+
+  return undefined;
 };
