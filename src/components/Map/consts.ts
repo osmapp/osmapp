@@ -10,6 +10,10 @@ export const OSMAPP_SPRITE = [
     id: 'default',
     url: `${window.location.protocol}//${window.location.host}/sprites/osmapp`,
   },
+  {
+    id: 'outdoorSprite',
+    url: `https://api.maptiler.com/maps/outdoor-v2/sprite?key=${apiKey}`,
+  },
 ];
 
 export const GLYPHS = `https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=${apiKey}`;
@@ -29,12 +33,12 @@ export const OSMAPP_SOURCES: Record<string, SourceSpecification> = {
   },
   contours: {
     type: 'vector' as const,
-    url: `https://api.maptiler.com/tiles/contours/tiles.json?key=${apiKey}`,
+    url: `https://api.maptiler.com/tiles/contours-v2/tiles.json?key=${apiKey}`,
   },
-  terrain: {
-    url: `https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=${apiKey}`,
+  'terrain-rgb': {
+    url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${apiKey}`,
     type: 'raster-dem' as const,
-    tileSize: 256,
+    // tileSize: 256,
   },
   outdoor: {
     url: `https://api.maptiler.com/tiles/outdoor/tiles.json?key=${apiKey}`,
