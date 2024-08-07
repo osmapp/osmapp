@@ -4,7 +4,7 @@ import {
 } from './layers/buildings3dLayers';
 import { poiLayers } from './layers/poiLayers';
 import { addHoverPaint } from '../behaviour/featureHover';
-import { BACKGROUND, GLYPHS, OSMAPP_SOURCES, OSMAPP_SPRITE } from '../consts';
+import { GLYPHS, OSMAPP_SOURCES, OSMAPP_SPRITE } from '../consts';
 import { motorwayConstruction } from './layers/contruction';
 import { overpassLayers } from './layers/overpassLayers';
 import { cliffsLayers } from './layers/cliffsLayers';
@@ -1437,29 +1437,30 @@ export const outdoorStyle = addHoverPaint({
       },
       filter: ['==', 'class', 'military'],
     },
-    {
-      id: 'Building',
-      type: 'fill',
-      source: 'maptiler_planet',
-      'source-layer': 'building',
-      minzoom: 13,
-      layout: {
-        visibility: 'visible',
-      },
-      paint: {
-        'fill-antialias': true,
-        'fill-color': [
-          'interpolate',
-          ['exponential', 1],
-          ['zoom'],
-          13,
-          'hsl(0, 0%, 82%)',
-          18,
-          'hsl(0, 0%, 72%)',
-        ],
-        'fill-outline-color': 'hsl(0, 0%, 77%)',
-      },
-    },
+    // {
+    //   id: 'Building',
+    //   type: 'fill',
+    //   source: 'maptiler_planet',
+    //   'source-layer': 'building',
+    //   minzoom: 13,
+    //   layout: {
+    //     visibility: 'visible',
+    //   },
+    //   paint: {
+    //     'fill-antialias': true,
+    //     'fill-color': [
+    //       'interpolate',
+    //       ['exponential', 1],
+    //       ['zoom'],
+    //       13,
+    //       'hsl(0, 0%, 82%)',
+    //       18,
+    //       'hsl(0, 0%, 72%)',
+    //     ],
+    //     'fill-outline-color': 'hsl(0, 0%, 77%)',
+    //   },
+    // },
+    ...buildings3dExtrusion,
     {
       id: 'Trails outline',
       type: 'line',

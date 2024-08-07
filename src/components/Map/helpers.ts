@@ -12,8 +12,13 @@ const isOsmLayer = (id) => {
 
 export const layersWithOsmId = (style) =>
   style.layers // TODO make it custom for basic/outdoor + revert place_
-    .map((x) => x.id)
-    .filter((id) => isOsmLayer(id));
+    .filter(
+      (layer) =>
+        layer['source-layer'] === 'poi' ||
+        layer['source-layer'] === 'outdoor_poi',
+    )
+    .map((x) => x.id);
+// .filter((id) => isOsmLayer(id));
 
 export const getIsOsmObject = ({ id, layer }) => {
   // these layers with id <= ~10000 are broken
