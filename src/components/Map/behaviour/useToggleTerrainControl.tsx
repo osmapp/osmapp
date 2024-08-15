@@ -3,7 +3,7 @@ import maplibregl from 'maplibre-gl';
 import { createMapEventHook } from '../../helpers';
 
 const TERRAIN = {
-  source: 'terrain',
+  source: 'terrain-rgb',
   exaggeration: 1,
 };
 
