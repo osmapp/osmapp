@@ -85,12 +85,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     const t2 = Date.now();
     const image = await getImageFromApi(def);
-    if (!image) {
+    if (image.length === 0) {
       throw new Error(`Image failed to load from API: ${JSON.stringify(def)}`);
     }
 
     const t3 = Date.now();
-    const svg = await renderSvg(feature, def, image);
+    const svg = await renderSvg(feature, def, image[0]);
 
     if (req.query.svg) {
       sendImageResponse(res, feature, svg, SVG_TYPE);

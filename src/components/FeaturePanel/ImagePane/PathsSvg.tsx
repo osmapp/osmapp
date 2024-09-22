@@ -16,22 +16,20 @@ import {
 
 import { Size } from './types';
 import { useFeatureContext } from '../../utils/FeatureContext';
-import { getKey, getShortId } from '../../../services/helpers';
+import { getKey } from '../../../services/helpers';
 
-const StyledSvg = styled.svg`
+const StyledSvg = styled.svg<{ size: Size }>`
   position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 100%;
   pointer-events: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: ${({ size }) => `${size.width}px`};
+  height: ${({ size }) => `${size.height}px`};
 `;
 
 const Svg = ({ children, size }) => (
-  <StyledSvg
-    viewBox={`0 0 ${size.width} ${size.height}`}
-    preserveAspectRatio="none" // when we load image we overlay and stretch the svg
-  >
+  <StyledSvg size={size} viewBox={`0 0 ${size.width} ${size.height}`}>
     {children}
   </StyledSvg>
 );
@@ -88,21 +86,22 @@ type PathsProps = {
 export const Paths = ({ def, feature, size }: PathsProps) => {
   const { preview } = useFeatureContext() ?? {};
 
+  if (!isTag(def)) {
+    return null;
+  }
   return (
-    isTag(def) && (
-      <>
-        {def.path && <Path path={def.path} feature={feature} size={size} />}
-        {def.memberPaths?.map(({ path, member }) => (
-          <Path
-            key={getKey(member)}
-            path={path}
-            feature={member}
-            size={size}
-            isHighlighted={preview === member}
-          />
-        ))}
-      </>
-    )
+    <>
+      {def.path && <Path path={def.path} feature={feature} size={size} />}
+      {def.memberPaths?.map(({ path, member }) => (
+        <Path
+          key={getKey(member)}
+          path={path}
+          feature={member}
+          size={size}
+          isHighlighted={preview === member}
+        />
+      ))}
+    </>
   );
 }; // Careful: used also in image generation, eg. /api/image?id=r6
 

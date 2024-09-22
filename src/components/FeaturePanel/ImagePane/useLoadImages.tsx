@@ -8,35 +8,12 @@ import { getImageFromApi } from '../../../services/images/getImageFromApi';
 import { useFeatureContext } from '../../utils/FeatureContext';
 import { ImageDef, isInstant } from '../../../services/types';
 
-export type ImagesType = { def: ImageDef; image: ImageType }[];
+export type ImageGroup = { def: ImageDef; images: ImageType[] };
 
-export const mergeResultFn =
-  (def: ImageDef, image: ImageType, defs: ImageDef[]) =>
-  (prevImages: ImagesType) => {
-    if (image == null) {
-      return prevImages;
-    }
-
-    const found = prevImages.find(
-      (item) => item.image?.imageUrl === image.imageUrl,
-    );
-    if (found) {
-      (found.image.sameUrlResolvedAlsoFrom ??= []).push(image);
-      return [...prevImages];
-    }
-
-    const sorted = [...prevImages, { def, image }].sort((a, b) => {
-      const aIndex = defs.findIndex((item) => item === a.def);
-      const bIndex = defs.findIndex((item) => item === b.def);
-      return aIndex - bIndex;
-    });
-    return sorted;
-  };
-
-const getInitialState = (defs: ImageDef[]) =>
+const getInitialState = (defs: ImageDef[]): ImageGroup[] =>
   defs?.filter(isInstant)?.map((def) => ({
     def,
-    image: getInstantImage(def),
+    images: getInstantImage(def) ? [getInstantImage(def)] : [],
   })) ?? [];
 
 export const useLoadImages = () => {
@@ -46,13 +23,19 @@ export const useLoadImages = () => {
 
   const initialState = useMemo(() => getInitialState(defs), [defs]);
   const [loading, setLoading] = useState(apiDefs.length > 0);
-  const [images, setImages] = useState<ImagesType>(initialState);
+  const [groups, setGroups] = useState<ImageGroup[]>(initialState);
 
   useEffect(() => {
-    setImages(initialState);
+    setGroups(initialState);
     const promises = apiDefs.map(async (def) => {
-      const image = await getImageFromApi(def);
-      setImages(mergeResultFn(def, image, defs));
+      const images = await getImageFromApi(def);
+      setGroups((prev) =>
+        [...prev, { def, images }].sort((a, b) => {
+          const aIndex = defs.findIndex((item) => item === a.def);
+          const bIndex = defs.findIndex((item) => item === b.def);
+          return aIndex - bIndex;
+        }),
+      );
     });
 
     Promise.all(promises).then(() => {
@@ -60,6 +43,6 @@ export const useLoadImages = () => {
     });
   }, [apiDefs, defs, initialState]);
 
-  publishDbgObject('last images', images);
-  return { loading, images: images.filter((item) => item.image != null) };
+  publishDbgObject('last images', groups);
+  return { loading, groups: groups.filter((group) => group.images.length > 0) };
 };

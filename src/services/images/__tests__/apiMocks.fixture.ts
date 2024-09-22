@@ -29,12 +29,12 @@ export const WIKIDATA: ApiMock = {
 };
 
 export const COMMONS_CATEGORY: ApiMock = {
-  url: 'https://commons.wikimedia.org/w/api.php?action=query&generator=categorymembers&gcmtitle=Category%3AYosemite%20National%20Park&gcmlimit=1&gcmtype=file&prop=imageinfo&&iiprop=url&iiurlwidth=410&format=json&origin=*',
+  url: 'https://commons.wikimedia.org/w/api.php?action=query&generator=categorymembers&gcmtitle=Category%3AYosemite%20National%20Park&gcmlimit=10&gcmtype=file&prop=imageinfo&iiprop=url&iiurlwidth=410&format=json&origin=*',
   response: {
     batchcomplete: '',
     continue: {
       gcmcontinue:
-        'file|3139313620594f53454d4954452042592047454f52474520535445524c494e472046524f4e5420434f5645522e504e47|149319876',
+        'file|35303050582050484f544f2028313039393139373931292e4a504547|78764811',
       continue: 'gcmcontinue||',
     },
     query: {
@@ -61,6 +61,223 @@ export const COMMONS_CATEGORY: ApiMock = {
                 'https://commons.wikimedia.org/wiki/File:1912_Indian_Motorcycle._This_two-cylinder_motorcycle_is_thought_to_have_been_the_first_motorcycle_in_Yosemite._The_driver_was_(ca6a33cc-1dd8-b71b-0b83-9551ada5207f).jpg',
               descriptionshorturl:
                 'https://commons.wikimedia.org/w/index.php?curid=148361232',
+            },
+          ],
+        },
+        '149319876': {
+          pageid: 149319876,
+          ns: 6,
+          title: 'File:1916 Yosemite by George Sterling front cover.png',
+          imagerepository: 'local',
+          imageinfo: [
+            {
+              thumburl:
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/1916_Yosemite_by_George_Sterling_front_cover.png/410px-1916_Yosemite_by_George_Sterling_front_cover.png',
+              thumbwidth: 410,
+              thumbheight: 598,
+              responsiveUrls: {
+                '1.5':
+                  'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/1916_Yosemite_by_George_Sterling_front_cover.png/614px-1916_Yosemite_by_George_Sterling_front_cover.png',
+                '2': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/1916_Yosemite_by_George_Sterling_front_cover.png/819px-1916_Yosemite_by_George_Sterling_front_cover.png',
+              },
+              url: 'https://upload.wikimedia.org/wikipedia/commons/c/c2/1916_Yosemite_by_George_Sterling_front_cover.png',
+              descriptionurl:
+                'https://commons.wikimedia.org/wiki/File:1916_Yosemite_by_George_Sterling_front_cover.png',
+              descriptionshorturl:
+                'https://commons.wikimedia.org/w/index.php?curid=149319876',
+            },
+          ],
+        },
+        '133422920': {
+          pageid: 133422920,
+          ns: 6,
+          title:
+            'File:339 b (?) 6 weeks old (18b4908c3f5342f0b50989504d9fd18f).jpg',
+          imagerepository: 'local',
+          imageinfo: [
+            {
+              thumburl:
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/339_b_%28%3F%29_6_weeks_old_%2818b4908c3f5342f0b50989504d9fd18f%29.jpg/410px-339_b_%28%3F%29_6_weeks_old_%2818b4908c3f5342f0b50989504d9fd18f%29.jpg',
+              thumbwidth: 410,
+              thumbheight: 254,
+              responsiveUrls: {
+                '1.5':
+                  'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/339_b_%28%3F%29_6_weeks_old_%2818b4908c3f5342f0b50989504d9fd18f%29.jpg/615px-339_b_%28%3F%29_6_weeks_old_%2818b4908c3f5342f0b50989504d9fd18f%29.jpg',
+                '2': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/339_b_%28%3F%29_6_weeks_old_%2818b4908c3f5342f0b50989504d9fd18f%29.jpg/820px-339_b_%28%3F%29_6_weeks_old_%2818b4908c3f5342f0b50989504d9fd18f%29.jpg',
+              },
+              url: 'https://upload.wikimedia.org/wikipedia/commons/6/66/339_b_%28%3F%29_6_weeks_old_%2818b4908c3f5342f0b50989504d9fd18f%29.jpg',
+              descriptionurl:
+                'https://commons.wikimedia.org/wiki/File:339_b_(%3F)_6_weeks_old_(18b4908c3f5342f0b50989504d9fd18f).jpg',
+              descriptionshorturl:
+                'https://commons.wikimedia.org/w/index.php?curid=133422920',
+            },
+          ],
+        },
+        '78764872': {
+          pageid: 78764872,
+          ns: 6,
+          title: 'File:500px photo (109919449).jpeg',
+          imagerepository: 'local',
+          imageinfo: [
+            {
+              thumburl:
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/500px_photo_%28109919449%29.jpeg/410px-500px_photo_%28109919449%29.jpeg',
+              thumbwidth: 410,
+              thumbheight: 308,
+              responsiveUrls: {
+                '1.5':
+                  'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/500px_photo_%28109919449%29.jpeg/615px-500px_photo_%28109919449%29.jpeg',
+                '2': 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/500px_photo_%28109919449%29.jpeg/820px-500px_photo_%28109919449%29.jpeg',
+              },
+              url: 'https://upload.wikimedia.org/wikipedia/commons/a/a7/500px_photo_%28109919449%29.jpeg',
+              descriptionurl:
+                'https://commons.wikimedia.org/wiki/File:500px_photo_(109919449).jpeg',
+              descriptionshorturl:
+                'https://commons.wikimedia.org/w/index.php?curid=78764872',
+            },
+          ],
+        },
+        '78764874': {
+          pageid: 78764874,
+          ns: 6,
+          title: 'File:500px photo (109919463).jpeg',
+          imagerepository: 'local',
+          imageinfo: [
+            {
+              thumburl:
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/500px_photo_%28109919463%29.jpeg/410px-500px_photo_%28109919463%29.jpeg',
+              thumbwidth: 410,
+              thumbheight: 308,
+              responsiveUrls: {
+                '1.5':
+                  'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/500px_photo_%28109919463%29.jpeg/615px-500px_photo_%28109919463%29.jpeg',
+                '2': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/500px_photo_%28109919463%29.jpeg/820px-500px_photo_%28109919463%29.jpeg',
+              },
+              url: 'https://upload.wikimedia.org/wikipedia/commons/8/8e/500px_photo_%28109919463%29.jpeg',
+              descriptionurl:
+                'https://commons.wikimedia.org/wiki/File:500px_photo_(109919463).jpeg',
+              descriptionshorturl:
+                'https://commons.wikimedia.org/w/index.php?curid=78764874',
+            },
+          ],
+        },
+        '78764885': {
+          pageid: 78764885,
+          ns: 6,
+          title: 'File:500px photo (109919597).jpeg',
+          imagerepository: 'local',
+          imageinfo: [
+            {
+              thumburl:
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/500px_photo_%28109919597%29.jpeg/410px-500px_photo_%28109919597%29.jpeg',
+              thumbwidth: 410,
+              thumbheight: 308,
+              responsiveUrls: {
+                '1.5':
+                  'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/500px_photo_%28109919597%29.jpeg/615px-500px_photo_%28109919597%29.jpeg',
+                '2': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/500px_photo_%28109919597%29.jpeg/820px-500px_photo_%28109919597%29.jpeg',
+              },
+              url: 'https://upload.wikimedia.org/wikipedia/commons/e/eb/500px_photo_%28109919597%29.jpeg',
+              descriptionurl:
+                'https://commons.wikimedia.org/wiki/File:500px_photo_(109919597).jpeg',
+              descriptionshorturl:
+                'https://commons.wikimedia.org/w/index.php?curid=78764885',
+            },
+          ],
+        },
+        '78764884': {
+          pageid: 78764884,
+          ns: 6,
+          title: 'File:500px photo (109919623).jpeg',
+          imagerepository: 'local',
+          imageinfo: [
+            {
+              thumburl:
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/500px_photo_%28109919623%29.jpeg/410px-500px_photo_%28109919623%29.jpeg',
+              thumbwidth: 410,
+              thumbheight: 308,
+              responsiveUrls: {
+                '1.5':
+                  'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/500px_photo_%28109919623%29.jpeg/615px-500px_photo_%28109919623%29.jpeg',
+                '2': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/500px_photo_%28109919623%29.jpeg/820px-500px_photo_%28109919623%29.jpeg',
+              },
+              url: 'https://upload.wikimedia.org/wikipedia/commons/3/36/500px_photo_%28109919623%29.jpeg',
+              descriptionurl:
+                'https://commons.wikimedia.org/wiki/File:500px_photo_(109919623).jpeg',
+              descriptionshorturl:
+                'https://commons.wikimedia.org/w/index.php?curid=78764884',
+            },
+          ],
+        },
+        '78764888': {
+          pageid: 78764888,
+          ns: 6,
+          title: 'File:500px photo (109919633).jpeg',
+          imagerepository: 'local',
+          imageinfo: [
+            {
+              thumburl:
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/500px_photo_%28109919633%29.jpeg/410px-500px_photo_%28109919633%29.jpeg',
+              thumbwidth: 410,
+              thumbheight: 308,
+              responsiveUrls: {
+                '1.5':
+                  'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/500px_photo_%28109919633%29.jpeg/615px-500px_photo_%28109919633%29.jpeg',
+                '2': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/500px_photo_%28109919633%29.jpeg/820px-500px_photo_%28109919633%29.jpeg',
+              },
+              url: 'https://upload.wikimedia.org/wikipedia/commons/f/f3/500px_photo_%28109919633%29.jpeg',
+              descriptionurl:
+                'https://commons.wikimedia.org/wiki/File:500px_photo_(109919633).jpeg',
+              descriptionshorturl:
+                'https://commons.wikimedia.org/w/index.php?curid=78764888',
+            },
+          ],
+        },
+        '78764887': {
+          pageid: 78764887,
+          ns: 6,
+          title: 'File:500px photo (109919637).jpeg',
+          imagerepository: 'local',
+          imageinfo: [
+            {
+              thumburl:
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/500px_photo_%28109919637%29.jpeg/410px-500px_photo_%28109919637%29.jpeg',
+              thumbwidth: 410,
+              thumbheight: 547,
+              responsiveUrls: {
+                '1.5':
+                  'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/500px_photo_%28109919637%29.jpeg/615px-500px_photo_%28109919637%29.jpeg',
+                '2': 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/500px_photo_%28109919637%29.jpeg/820px-500px_photo_%28109919637%29.jpeg',
+              },
+              url: 'https://upload.wikimedia.org/wikipedia/commons/9/98/500px_photo_%28109919637%29.jpeg',
+              descriptionurl:
+                'https://commons.wikimedia.org/wiki/File:500px_photo_(109919637).jpeg',
+              descriptionshorturl:
+                'https://commons.wikimedia.org/w/index.php?curid=78764887',
+            },
+          ],
+        },
+        '78764889': {
+          pageid: 78764889,
+          ns: 6,
+          title: 'File:500px photo (109919659).jpeg',
+          imagerepository: 'local',
+          imageinfo: [
+            {
+              thumburl:
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/500px_photo_%28109919659%29.jpeg/410px-500px_photo_%28109919659%29.jpeg',
+              thumbwidth: 410,
+              thumbheight: 547,
+              responsiveUrls: {
+                '1.5':
+                  'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/500px_photo_%28109919659%29.jpeg/615px-500px_photo_%28109919659%29.jpeg',
+                '2': 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/500px_photo_%28109919659%29.jpeg/820px-500px_photo_%28109919659%29.jpeg',
+              },
+              url: 'https://upload.wikimedia.org/wikipedia/commons/b/b1/500px_photo_%28109919659%29.jpeg',
+              descriptionurl:
+                'https://commons.wikimedia.org/wiki/File:500px_photo_(109919659).jpeg',
+              descriptionshorturl:
+                'https://commons.wikimedia.org/w/index.php?curid=78764889',
             },
           ],
         },
@@ -102,34 +319,6 @@ export const COMMONS_FILE: ApiMock = {
       },
     },
   },
-};
-
-export const WIKIPEDIA: ApiMock = {
-  url: 'https://en.wikipedia.org/w/api.php?action=query&prop=pageimages&pithumbsize=410&format=json&titles=Yosemite%20National%20Park&origin=*',
-  response: {
-    batchcomplete: '',
-    query: {
-      pages: {
-        '48664': {
-          pageid: 48664,
-          ns: 0,
-          title: 'Yosemite National Park',
-          thumbnail: {
-            source:
-              'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Tunnel_View%2C_Yosemite_Valley%2C_Yosemite_NP_-_Diliff.jpg/410px-Tunnel_View%2C_Yosemite_Valley%2C_Yosemite_NP_-_Diliff.jpg',
-            width: 410,
-            height: 418,
-          },
-          pageimage: 'Tunnel_View,_Yosemite_Valley,_Yosemite_NP_-_Diliff.jpg',
-        },
-      },
-    },
-  },
-};
-
-export const WIKIPEDIA_CS: ApiMock = {
-  url: 'https://cs.wikipedia.org/w/api.php?action=query&prop=pageimages&pithumbsize=410&format=json&titles=Yosemite%20National%20Park&origin=*',
-  response: WIKIPEDIA.response,
 };
 
 export const FODY: ApiMock = {

@@ -1,26 +1,48 @@
 import React from 'react';
+import uniq from 'lodash/uniq';
+import uniqBy from 'lodash/uniqBy';
 import styled from '@emotion/styled';
-import { Box } from '@mui/material';
 import { ImageType } from '../../../../services/images/getImageDefs';
 import { t } from '../../../../services/intl';
 import { TooltipButton } from '../../../utils/TooltipButton';
 
-const TooltipContent = ({ image }: { image: ImageType }) => (
-  <>
-    {image.description}
-    <br />
-    <a href={image.linkUrl} target="_blank">
-      {image.link}
-    </a>
-    {image.uncertainImage && (
-      <>
-        <br />
-        <br />
-        {t('featurepanel.uncertain_image')}
-      </>
-    )}
-  </>
-);
+type TooltipProps = {
+  images: ImageType[];
+};
+
+const TooltipContent = ({ images }: TooltipProps) => {
+  const descs: string[] = uniq(images.map(({ description }) => description));
+  const links: [string, string][] = uniqBy(
+    images.map(({ linkUrl, link }) => [linkUrl, link]),
+    ([url, link]) => `${url}-${link}`,
+  );
+  const isUncertain = images.some(({ uncertainImage }) => uncertainImage);
+  return (
+    <>
+      {descs.map((desc) => (
+        <>
+          {desc}
+          <br />
+        </>
+      ))}
+      {links.map(([linkUrl, link]) => (
+        <>
+          <a href={linkUrl} target="_blank" key={linkUrl}>
+            {link}
+          </a>
+          <br />
+        </>
+      ))}
+      {isUncertain && (
+        <>
+          <br />
+          <br />
+          {t('featurepanel.uncertain_image')}
+        </>
+      )}
+    </>
+  );
+};
 
 const InfoButtonWrapper = styled.div`
   position: absolute;
@@ -34,19 +56,8 @@ const InfoButtonWrapper = styled.div`
   }
 `;
 
-export const InfoButton = ({ image }: { image: ImageType }) => (
+export const InfoButton = ({ images }: TooltipProps) => (
   <InfoButtonWrapper>
-    <TooltipButton
-      tooltip={
-        <>
-          <TooltipContent image={image} />
-          {image.sameUrlResolvedAlsoFrom?.map((item) => (
-            <Box key={item.imageUrl} mt={1}>
-              <TooltipContent image={item} />
-            </Box>
-          ))}
-        </>
-      }
-    />
+    <TooltipButton tooltip={<TooltipContent images={images} />} />
   </InfoButtonWrapper>
 );

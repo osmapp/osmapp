@@ -9,8 +9,7 @@ import { Feature, isInstant, OsmId } from '../../services/types';
 import { useMobileMode } from '../helpers';
 import { getLabel } from '../../helpers/featureLabel';
 
-import { Slider, Wrapper } from './ImagePane/FeatureImages';
-import { Image } from './ImagePane/Image/Image';
+import { FeatureImagesUi } from './ImagePane/FeatureImages';
 import { getInstantImage } from '../../services/images/getImageDefs';
 
 const ArrowIcon = styled(ArrowForwardIosIcon)`
@@ -90,19 +89,7 @@ const Header = ({
   </HeadingRow>
 );
 
-const Gallery = ({ images }) => {
-  return (
-    <Wrapper>
-      <Slider>
-        {images.map((item) => (
-          <Image key={item.image.imageUrl} def={item.def} image={item.image} />
-        ))}
-      </Slider>
-    </Wrapper>
-  );
-};
-
-const getOnClickWithHash = (apiId: OsmId) => (e) => {
+const getOnClickWithHash = (apiId: OsmId) => (e: React.MouseEvent) => {
   e.preventDefault();
   Router.push(`/${getUrlOsmId(apiId)}${window.location.hash}`);
 };
@@ -119,21 +106,28 @@ const CragItem = ({ feature }: { feature: Feature }) => {
     })) ?? [];
 
   return (
-    <Link
-      href={`/${getUrlOsmId(feature.osmMeta)}`}
-      onClick={getOnClickWithHash(feature.osmMeta)}
-      onMouseEnter={mobileMode ? undefined : handleHover}
-      onMouseLeave={() => setPreview(null)}
-    >
-      <Container>
+    <Container>
+      <Link
+        href={`/${getUrlOsmId(feature.osmMeta)}`}
+        onClick={getOnClickWithHash(feature.osmMeta)}
+        onMouseEnter={mobileMode ? undefined : handleHover}
+        onMouseLeave={() => setPreview(null)}
+      >
         <Header
           label={getLabel(feature)}
           routesCount={feature.members?.length}
           imagesCount={images.length}
         />
-        {images.length ? <Gallery images={images} /> : null}
-      </Container>
-    </Link>
+      </Link>
+      {!!images.length && (
+        <FeatureImagesUi
+          groups={images.map(({ def, image }) => ({
+            def,
+            images: [image],
+          }))}
+        />
+      )}
+    </Container>
   );
 };
 
