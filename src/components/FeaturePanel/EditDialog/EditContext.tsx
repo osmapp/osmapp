@@ -14,6 +14,8 @@ type EditContextType = {
   setLocation: (s: string) => void;
   comment: string;
   setComment: (s: string) => void;
+  presetKey: string;
+  setPresetKey: Setter<string>;
   tags: {
     tagsEntries: TagsEntries;
     setTagsEntries: Setter<TagsEntries>;
@@ -65,6 +67,7 @@ export const EditContextProvider = ({ feature, children }: Props) => {
   const [location, setLocation] = useState('');
   const [comment, setComment] = useState('');
   const tags = useTagsState(feature.tags);
+  const [presetKey, setPresetKey] = useState(''); // only cache, real data in tags
 
   const value: EditContextType = {
     successInfo,
@@ -75,6 +78,8 @@ export const EditContextProvider = ({ feature, children }: Props) => {
     setLocation,
     comment,
     setComment,
+    presetKey,
+    setPresetKey,
     tags,
   };
 
