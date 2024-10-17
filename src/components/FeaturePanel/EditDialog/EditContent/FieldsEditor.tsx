@@ -97,8 +97,10 @@ const FieldsEditorInner = ({ preset }: { preset: Preset }) => {
                 label={label}
                 multiple
                 value={values}
-                onChange={(e) => setTag(k, e.target.value.join(';'))}
-                renderValue={(selected) => selected.join(';')}
+                onChange={(e) =>
+                  setTag(k, (e.target.value as string[]).join(';'))
+                }
+                renderValue={(selected) => selected.join(', ')}
                 displayEmpty
                 fullWidth
                 variant="outlined"
