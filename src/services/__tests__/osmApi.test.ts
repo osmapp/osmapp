@@ -97,7 +97,11 @@ describe('fetchFeature', () => {
     expect(feature).toMatchObject({
       ...WAY_FEATURE,
       center: [123, 456],
-      imageDefs: [{ type: 'center', service: 'mapillary', center: [123, 456] }],
+      imageDefs: [
+        { type: 'center', service: 'panoramax', center: [123, 456] },
+        { type: 'center', service: 'kartaview', center: [123, 456] },
+        { type: 'center', service: 'mapillary', center: [123, 456] },
+      ],
     });
   });
 });

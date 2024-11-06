@@ -59,7 +59,8 @@ const OpeningHoursRenderer = ({ v }) => {
     state: '',
   });
   if (!openingHours) return null;
-  const { daysTable, status } = openingHours;
+
+  const { daysTable, status, maybeReasons } = openingHours;
 
   const { ph, ...days } = daysTable;
   const timesByDay = Object.values(days).map((times, idx) => ({
@@ -78,6 +79,12 @@ const OpeningHoursRenderer = ({ v }) => {
       <AccessTime fontSize="small" />
       <div suppressHydrationWarning>
         {formatDescription(status, daysTable)}
+        {maybeReasons.length > 0 && (
+          <>
+            <br />
+            Maybe: {maybeReasons.join(' or ')}
+          </>
+        )}
         <ToggleButton onClick={toggle} isShown={isExpanded} />
         {isExpanded && (
           <Table>

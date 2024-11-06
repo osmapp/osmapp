@@ -6,7 +6,7 @@ import { DialogHeading } from '../components';
 import { t, Translation } from '../../../../services/intl';
 import { useOsmAuthContext } from '../../../utils/OsmAuthContext';
 import { useToggleState } from '../../../helpers';
-import { getIdEditorLink } from '../../../../utils';
+import { getIdEditorLink } from '../../helpers/externalLinks';
 
 export const PlaceCancelledToggle = () => {
   const {

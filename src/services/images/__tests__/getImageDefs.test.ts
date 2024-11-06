@@ -57,6 +57,16 @@ test('conversion', () => {
     },
     {
       type: 'center',
+      service: 'panoramax',
+      center: [14, 50],
+    },
+    {
+      type: 'center',
+      service: 'kartaview',
+      center: [14, 50],
+    },
+    {
+      type: 'center',
       service: 'mapillary',
       center: [14, 50],
     },

@@ -25,16 +25,16 @@ const overpassOptionSelected = (
   bbox: Bbox,
   showToast: ShowToast,
 ) => {
-  const tagsOrQuery =
+  const astOrQuery =
     option.type === 'preset'
       ? option.preset?.presetForSearch.tags
-      : (option.overpass.tags ?? option.overpass.query);
+      : (option.overpass.ast ?? option.overpass.query);
 
   const timeout = setTimeout(() => {
     setOverpassLoading(true);
   }, 300);
 
-  performOverpassSearch(bbox, tagsOrQuery)
+  performOverpassSearch(bbox, astOrQuery)
     .then((geojson) => {
       const count = geojson.features.length;
       const content = t('searchbox.overpass_success', { count });

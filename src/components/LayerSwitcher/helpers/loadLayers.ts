@@ -24,7 +24,7 @@ export interface LayerIndex {
    */
   id: string;
   bbox?: number[][];
-  type: 'tms';
+  type: 'tms' | 'wms';
   /**
    * A URL template for imagery tilesA URL template for imagery tiles
    */
@@ -156,8 +156,23 @@ export async function loadLayer() {
 
       const boxes = coordinates?.map(getBoundingBox);
 
-      return { ...properties, bbox: boxes };
+      return {
+        ...properties,
+        bbox: boxes,
+        url: properties.url
+          .replace('{proj}', 'EPSG:3857')
+          .replace('{width}', '256')
+          .replace('{height}', '256')
+          .replace('{bbox}', '{bbox-epsg-3857}'),
+      };
     })
-    .filter(({ type }) => type === 'tms')
+    .filter(({ type, available_projections }) => {
+      if (type === 'tms') {
+        return true;
+      }
+      return (
+        type === 'wms' && (available_projections ?? []).includes('EPSG:3857')
+      );
+    })
     .filter(({ url }) => isValidLayerUrl(url, false)) as LayerIndex[];
 }

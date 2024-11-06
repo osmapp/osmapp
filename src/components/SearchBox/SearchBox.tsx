@@ -7,11 +7,10 @@ import { useFeatureContext } from '../utils/FeatureContext';
 import { AutocompleteInput } from './AutocompleteInput';
 import { t } from '../../services/intl';
 import { ClosePanelButton } from '../utils/ClosePanelButton';
-import { isDesktop, isDesktopResolution, useMobileMode } from '../helpers';
+import { isDesktop, useMobileMode } from '../helpers';
 import { SEARCH_BOX_HEIGHT } from './consts';
 import { HamburgerMenu } from '../Map/TopMenu/HamburgerMenu';
 import { UserMenu } from '../Map/TopMenu/UserMenu';
-import { DirectionsButton } from '../Directions/DirectionsButton';
 import { setLastFeature } from '../../services/lastFeatureStorage';
 
 const TopPanel = styled.div`
@@ -103,8 +102,6 @@ const SearchBox = ({ withShadow = false }) => {
             <HamburgerMenu />
           </>
         )}
-
-        <DirectionsButton />
       </StyledPaper>
     </TopPanel>
   );

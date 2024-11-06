@@ -4,6 +4,7 @@ import { Grid, Typography } from '@mui/material';
 import type { OverpassOption } from '../types';
 import { t } from '../../../services/intl';
 import { IconPart } from '../utils';
+import { getAST, queryWizardLabel } from '../queryWizard/queryWizard';
 
 const OVERPASS_HISTORY_KEY = 'overpassQueryHistory';
 
@@ -40,19 +41,19 @@ export const getOverpassOptions = (inputValue: string): OverpassOption[] => {
     ];
   }
 
-  if (inputValue.match(/^[-:_a-zA-Z0-9]+=/)) {
-    const [key, value] = inputValue.split('=', 2);
+  try {
+    const ast = getAST(inputValue);
     return [
       {
         type: 'overpass',
         overpass: {
-          tags: { [key]: value || '*' },
-          label: `${key}=${value || '*'}`,
+          ast,
           inputValue,
+          label: queryWizardLabel(ast),
         },
       },
     ];
-  }
+  } catch {}
 
   return [];
 };

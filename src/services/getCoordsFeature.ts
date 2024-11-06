@@ -1,3 +1,4 @@
+import { getImagesFromCenter } from './images/getImageDefs';
 import { Feature, LonLatRounded, OsmType } from './types';
 
 export const getCoordsFeature = ([lon, lat]: LonLatRounded): Feature => {
@@ -13,6 +14,6 @@ export const getCoordsFeature = ([lon, lat]: LonLatRounded): Feature => {
     },
     tags: {},
     properties: { class: 'marker', subclass: 'point' },
-    imageDefs: [{ type: 'center', service: 'mapillary', center }],
+    imageDefs: getImagesFromCenter({}, center),
   };
 };

@@ -45,6 +45,10 @@ export const useGetHandleSave = () => {
         showToast(t('editdialog.osm_session_expired'), 'error');
         handleLogout();
       } else {
+        showToast(
+          `${t('editdialog.save_refused')} ${err.responseText ?? err.message}`,
+          'error',
+        );
         console.error(err); // eslint-disable-line no-console
       }
       setTimeout(() => setIsSaving(false), 500);

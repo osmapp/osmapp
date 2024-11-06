@@ -10,7 +10,8 @@ export const useGetOnClose = () => {
   return () => {
     close();
     if (successInfo?.redirect) {
-      router.replace(successInfo.redirect); // only useRouter reloads the panel client-side
+      // Reloads the panel client-side
+      router.replace('/').then(() => router.replace(successInfo?.redirect));
     }
   };
 };

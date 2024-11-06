@@ -21,6 +21,7 @@ export interface Layer {
   Icon?: LayerIcon;
   attribution?: string[]; // missing in spacer TODO refactor ugly
   maxzoom?: number;
+  minzoom?: number;
   bboxes?: number[][];
 }
 

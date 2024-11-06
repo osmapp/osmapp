@@ -128,7 +128,7 @@ export default {
   'featurepanel.feature_description_point': 'Map coordinates',
   'featurepanel.show_tags': 'Show tags',
   'featurepanel.show_objects_around': 'Show nearby objects',
-  'featurepanel.uncertain_image': 'This is the closest street view image from Mapillary. It may be inaccurate.',
+  'featurepanel.uncertain_image': 'This is the closest street view image from __from__. It may be inaccurate.',
   'featurepanel.inline_edit_title': 'Edit',
   'featurepanel.objects_around': 'Nearby objects',
   'featurepanel.more_in_openplaceguide': 'More information on __instanceName__',
@@ -187,6 +187,7 @@ export default {
   'editdialog.tags_editor': 'All properties – Tags',
   'editdialog.tags_editor_info': `Tags contain the data used to display objects on the map.<br>You can find <a href="https://wiki.openstreetmap.org/wiki/Map_Features" target="_blank">a reference for all tags on the OpenStreetMap Wiki</a>.`,
   'editdialog.login_in_progress': `Logging in...`,
+  'editdialog.save_refused': 'Unable to save your changes.',
 
   'editsuccess.close_button': 'Done',
   'editsuccess.note.heading': 'Thank you for your suggestion!',
@@ -214,7 +215,6 @@ export default {
   'tags.opening_hours': 'Hours',
 
   'coordinates.geo_uri': 'GeoURI (phone map app)',
-  'coordinates.copy_value': 'Copy __value__', // keep it short, don't mention clipboard
 
   'layerswitcher.button': 'Layers',
   'layerswitcher.heading': 'Map layers',
@@ -262,6 +262,10 @@ export default {
   'publictransport.subway': 'Subway',
   'publictransport.unknown': 'Unknown type',
 
+  'publictransport.show_this_category': 'Show this category',
+  'publictransport.hide_this_category': 'Hide this category',
+  'publictransport.only_this_category': 'Show only this category',
+
   'publictransport.route': 'Route',
   'publictransport.hidden_stops': '__amount__ more stops',
   'publictransport.visible_stops': 'Hide __amount__ stops',
@@ -285,4 +289,9 @@ export default {
   'member_features.subitems': 'Subitems',
   'member_features.climbing': 'Climbing routes',
   'member_features.routes': 'Routes',
+
+  'sharedialog.link': 'Link',
+  'sharedialog.coordinates': 'Coordinates',
+  'sharedialog.openin': 'Open in',
+  'sharedialog.image_attribution': 'Image attributions',
 };

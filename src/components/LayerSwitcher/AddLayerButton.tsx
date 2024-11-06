@@ -31,6 +31,7 @@ export const AddUserLayerButton = () => {
             url,
             name,
             max_zoom: maxzoom,
+            min_zoom: minzoom,
             attribution,
             bbox: bboxes,
           } = layer;
@@ -38,6 +39,7 @@ export const AddUserLayerButton = () => {
           const newLayer: Layer = {
             type: 'user',
             maxzoom,
+            minzoom,
             name,
             url,
             bboxes,

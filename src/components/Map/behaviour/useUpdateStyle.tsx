@@ -83,8 +83,11 @@ export const useUpdateStyle = createMapEffectHook(
 
     const osmappLayerMaxZoom = osmappLayers[key]?.maxzoom;
     const userLayerMaxZoom = userLayers.find(({ url }) => url === key)?.maxzoom;
-
     map.setMaxZoom(osmappLayerMaxZoom ?? userLayerMaxZoom ?? 24); // TODO find a way how to zoom bing further (now it stops at 19)
+
+    const osmappLayerMinZoom = osmappLayers[key]?.minzoom;
+    const userLayerMinZoom = userLayers.find(({ url }) => url === key)?.minzoom;
+    map.setMinZoom(osmappLayerMinZoom ?? userLayerMinZoom ?? 0);
 
     const style = cloneDeep(getBaseStyle(key));
     addOverlaysToStyle(map, style, overlays);

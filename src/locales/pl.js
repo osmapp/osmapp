@@ -132,7 +132,6 @@ export default {
   'tags.opening_hours': 'Godziny otwarcia',
 
   'coordinates.geo_uri': 'GeoURI (aplikacja mapowa na telefonie)',
-  'coordinates.copy_value': 'Kopiuj __value__', // keep it short, don't mention clipboard
 
   'layerswitcher.button': 'Mapy',
   'layerswitcher.heading': 'Warstwy mapy',

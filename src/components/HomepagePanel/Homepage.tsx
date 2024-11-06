@@ -237,7 +237,10 @@ export function Homepage({
                 {` – ${t('homepage.maptiler')}`}
               </li>
               <li>
-                <a href="https://vercel.com" target="_blank">
+                <a
+                  href="https://vercel.com/?utm_source=osm-app-team&utm_campaign=oss"
+                  target="_blank"
+                >
                   Vercel
                 </a>
                 {` – ${t('homepage.vercel')}`}
@@ -247,7 +250,10 @@ export function Homepage({
               <LogoMaptiler width={200} height={52} />
             </a>
             <br />
-            <a href="https://vercel.com" target="_blank">
+            <a
+              href="https://vercel.com/?utm_source=osm-app-team&utm_campaign=oss"
+              target="_blank"
+            >
               <img src="/vercel.svg" alt="Vercel" width="200" height="41" />
             </a>
 

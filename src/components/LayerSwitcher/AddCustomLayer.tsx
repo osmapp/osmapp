@@ -62,7 +62,8 @@ const LayerDataInput: React.FC<{
         setLayerIndex(result);
         setLayerIndexState('success');
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error(err); // eslint-disable-line no-console
         setLayerIndex([]);
         setLayerIndexState('error');
       });
@@ -358,9 +359,7 @@ export const AddCustomDialog: React.FC<AddDialogProps> = ({
         )}
 
         <DialogActions>
-          <Button onClick={onReset} color="secondary" variant="outlined">
-            Cancel
-          </Button>
+          <Button onClick={onReset}>Cancel</Button>
 
           <Button
             onClick={onSave}

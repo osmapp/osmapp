@@ -4,6 +4,7 @@ import { Address, SimpleOpeningHoursTable } from './types';
 import { LonLat } from '../../../../services/types';
 import { intl, t } from '../../../../services/intl';
 import { addDays, isAfter, isEqual, set } from 'date-fns';
+import uniq from 'lodash/uniq';
 
 type Weekday = keyof SimpleOpeningHoursTable;
 const WEEKDAYS: Weekday[] = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa', 'ph'];
@@ -28,9 +29,19 @@ const fmtDateRange = ([start, end]: DateRange) => {
   return `${fmtDate(start)}-${fmtDate(end)}`;
 };
 
+const getMinsDiff = (date: Date) =>
+  Math.round((date.getTime() - new Date().getTime()) / 60000);
+
 export type Status = 'opens-soon' | 'closes-soon' | 'opened' | 'closed';
 
-const getStatus = (opensInMins: number, closesInMins: number): Status => {
+const getStatus = (interval: [Date, Date, boolean, string] | null): Status => {
+  if (!interval) {
+    return 'closed';
+  }
+
+  const opensInMins = getMinsDiff(interval[0]);
+  const closesInMins = getMinsDiff(interval[1]);
+
   const isOpened = opensInMins <= 0 && closesInMins >= 0;
 
   if (!isOpened && opensInMins <= 15) {
@@ -63,7 +74,8 @@ export const parseComplexOpeningHours = (
   const oneWeekLater = new Date(today);
   oneWeekLater.setDate(oneWeekLater.getDate() + 7);
 
-  const intervals = oh.getOpenIntervals(today, oneWeekLater);
+  const allIntervals = oh.getOpenIntervals(today, oneWeekLater);
+  const intervals = allIntervals.filter(([_, __, maybe]) => !maybe);
   const splittedIntervals = intervals.flatMap(([openingDate, endDate]) =>
     splitDateRangeAtMidnight([openingDate, endDate], (d1, d2) => {
       const splitPoint = set(addDays(new Date(d1), 1), {
@@ -94,17 +106,19 @@ export const parseComplexOpeningHours = (
     }),
   ) as unknown as SimpleOpeningHoursTable;
 
-  const currently = new Date();
-  const getMinsDiff = (date: Date) =>
-    Math.round((date.getTime() - currently.getTime()) / 60000);
   // intervals are sorted from the present to the future
   // so the first one is either currently opened or the next opened slot
-  const relevantInterval = intervals.find(([, endDate]) => endDate > currently);
-  const opensInMins = relevantInterval ? getMinsDiff(relevantInterval[0]) : 0;
-  const closesInMins = relevantInterval ? getMinsDiff(relevantInterval[1]) : 0;
+  const relevantInterval = intervals.find(
+    ([, endDate]) => endDate > new Date(),
+  );
+
+  const maybeOpenedReasons = allIntervals
+    .filter(([_, __, maybe]) => maybe)
+    .map((interval) => interval[3]);
 
   return {
     daysTable,
-    status: getStatus(opensInMins, closesInMins),
+    status: getStatus(relevantInterval),
+    maybeReasons: uniq(maybeOpenedReasons),
   };
 };

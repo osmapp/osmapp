@@ -1,5 +1,5 @@
 import { Position } from '../../types';
-import { getBearing } from '../getMapillaryImage';
+import { getBearing } from '../getImageFromCenterFactory';
 
 jest.mock('maplibre-gl', () => ({}));
 

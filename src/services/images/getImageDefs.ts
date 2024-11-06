@@ -20,6 +20,7 @@ export type ImageType = {
   uncertainImage?: true;
   sameUrlResolvedAlsoFrom?: ImageType[]; // only 1 level
   panoramaUrl?: string; // only for Mapillary (ImageDefFromCenter)
+  provider?: string;
 };
 
 const getSuffix = (y: string) => {
@@ -80,6 +81,18 @@ export const getInstantImage = ({ k, v }: KeyValue): ImageType | null => {
     };
   }
 
+  if (k.startsWith('panoramax')) {
+    const imageUrl = `https://api.panoramax.xyz/api/pictures/${v}/hd.jpg`;
+    const linkUrl = `https://panoramax.xyz/#focus=pic&pic=${v}`;
+
+    return {
+      imageUrl,
+      linkUrl,
+      description: `Panoramax (${k}=*)`,
+      link: 'Panoramax',
+    };
+  }
+
   return null; // API call needed
 };
 
@@ -91,6 +104,9 @@ const commons = (k: string) => k.match(/^wikimedia_commons(\d*|:(?!path).*)$/);
 const commonsFile = ([k, v]) => commons(k) && v.startsWith('File:');
 const commonsCategory = ([k, v]) => commons(k) && v.startsWith('Category:');
 
+const mapillary = ([k, v]) => k === 'mapillary' && v.match(/^\d+$/);
+const panoramax = ([k, _]) => k === 'panoramax';
+
 const getImagesFromTags = (tags: FeatureTags) => {
   const entries = Object.entries(tags);
   const imageTags = [
@@ -99,6 +115,8 @@ const getImagesFromTags = (tags: FeatureTags) => {
     ...entries.filter(wikipedia),
     ...entries.filter(wikidata),
     ...entries.filter(commonsCategory),
+    ...entries.filter(mapillary),
+    ...entries.filter(panoramax),
   ];
 
   return imageTags
@@ -110,15 +128,23 @@ const getImagesFromTags = (tags: FeatureTags) => {
     .sort((a, b) => +b.instant - +a.instant);
 };
 
-const getImagesFromCenter = (tags: FeatureTags, center?: LonLat): ImageDef[] =>
-  !center
-    ? []
-    : [
-        ...(tags.information
-          ? [{ type: 'center', service: 'fody', center } as ImageDefFromCenter]
-          : []),
-        { type: 'center', service: 'mapillary', center } as ImageDefFromCenter,
-      ];
+export const getImagesFromCenter = (
+  tags: FeatureTags,
+  center?: LonLat,
+): ImageDef[] => {
+  if (!center) {
+    return [];
+  }
+  return [
+    ...(tags.information
+      ? [{ type: 'center', service: 'fody', center } as ImageDefFromCenter]
+      : []),
+    { type: 'center', service: 'panoramax', center } as ImageDefFromCenter,
+    { type: 'center', service: 'kartaview', center } as ImageDefFromCenter,
+    // it is annoying to scroll past a pano image - so we put it last
+    { type: 'center', service: 'mapillary', center } as ImageDefFromCenter,
+  ];
+};
 
 export const getImageDefs = (tags: FeatureTags, center?: LonLat) => [
   ...getImagesFromTags(tags),

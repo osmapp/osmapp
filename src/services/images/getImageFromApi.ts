@@ -1,10 +1,12 @@
 import { fetchJson } from '../fetch';
 import { isInstant, ImageDef, isCenter, isTag } from '../types';
-import { getMapillaryImage } from './getMapillaryImage';
+import { getMapillaryImage, MAPILLARY_ACCESS_TOKEN } from './getMapillaryImage';
 import { getFodyImage } from './getFodyImage';
 import { getInstantImage, WIDTH, ImageType } from './getImageDefs';
 import { encodeUrl } from '../../helpers/utils';
 import { getCommonsImageUrl } from './getCommonsImageUrl';
+import { getKartaViewImage } from './getkartaViewImage';
+import { getPanoramaxImage } from './getPanoramaxImage';
 
 type ImagePromise = Promise<ImageType | null>;
 
@@ -107,11 +109,38 @@ const fetchWikipedia = async (k: string, v: string): ImagePromise => {
   };
 };
 
+type MapillaryResponse = {
+  is_pano: boolean;
+  thumb_1024_url: string;
+  thumb_original_url: string;
+  id: string;
+};
+
+const fetchMapillaryTag = async (k: string, v: string): ImagePromise => {
+  const fields = ['is_pano', 'thumb_1024_url', 'thumb_original_url'];
+  const url = `https://graph.mapillary.com/${v}?fields=thumb_1024_url&access_token=${MAPILLARY_ACCESS_TOKEN}&fields=${fields.join(',')}`;
+  const data = await fetchJson<MapillaryResponse>(url);
+
+  return {
+    ...(data.is_pano ? { panoramaUrl: data.thumb_original_url } : {}),
+    imageUrl: data.thumb_1024_url,
+    link: 'Mapillary',
+    linkUrl: `https://www.mapillary.com/app/?pKey=${v}&focus=photo`,
+    description: `Mapillary (${k}=*)`,
+  };
+};
+
 export const getImageFromApiRaw = async (def: ImageDef): ImagePromise => {
   if (isCenter(def)) {
     const { service, center } = def;
     if (service === 'mapillary') {
       return getMapillaryImage(center);
+    }
+    if (service === 'kartaview') {
+      return getKartaViewImage(center);
+    }
+    if (service === 'panoramax') {
+      return getPanoramaxImage(center);
     }
 
     if (service === 'fody') {
@@ -135,6 +164,9 @@ export const getImageFromApiRaw = async (def: ImageDef): ImagePromise => {
     }
     if (k.startsWith('wikipedia')) {
       return fetchWikipedia(k, v);
+    }
+    if (k.startsWith('mapillary')) {
+      return fetchMapillaryTag(k, v);
     }
   }
 

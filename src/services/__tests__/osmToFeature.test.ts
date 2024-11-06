@@ -50,6 +50,16 @@ const imageDefs: ImageDef[] = [
   },
   {
     type: 'center',
+    service: 'panoramax',
+    center: [14.2523716, 49.6541269],
+  },
+  {
+    type: 'center',
+    service: 'kartaview',
+    center: [14.2523716, 49.6541269],
+  },
+  {
+    type: 'center',
     service: 'mapillary',
     center: [14.2523716, 49.6541269],
   },

@@ -31,12 +31,15 @@
           yarn
           nodePackages.typescript-language-server
           prettierd
+
+          libuuid # For jest
         ];
         shellHook = ''
           if [ ! -d node_modules ]; then
             echo "Use yarn to install dependencies"
           fi
         '';
+        env = {LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [pkgs.libuuid];};
       };
     });
   };

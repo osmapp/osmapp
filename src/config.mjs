@@ -17,4 +17,5 @@ export const LANGUAGES = {
   it: 'Italiano',
   pl: 'Polski',
   am: 'አማርኛ',
+  ja: '日本語',
 };

@@ -18,7 +18,7 @@ interface FetchOpts extends RequestInit {
   nocache?: boolean;
 }
 
-export const fetchText = async (url, opts: FetchOpts = {}) => {
+export const fetchText = async (url: string, opts: FetchOpts = {}) => {
   const key = getKey(url, opts);
   const item = getCache(key);
   if (item) return item;

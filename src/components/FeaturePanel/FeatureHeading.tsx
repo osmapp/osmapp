@@ -4,11 +4,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import { IconButton, useMediaQuery } from '@mui/material';
 import { useEditDialogContext } from './helpers/EditDialogContext';
 import { PoiDescription } from './helpers/PoiDescription';
-import { StarButton } from './helpers/StarButton';
 import { getLabel, getSecondaryLabel } from '../../helpers/featureLabel';
 import { useFeatureContext } from '../utils/FeatureContext';
 import { t } from '../../services/intl';
 import { isMobileDevice } from '../helpers';
+import { QuickActions } from './QuickActions/QuickActions';
 
 const StyledEditButton = styled(IconButton)`
   visibility: hidden;
@@ -95,7 +95,6 @@ const SecondaryHeading = styled.h2<{ $deleted: boolean }>`
 export const FeatureHeading = React.forwardRef<HTMLDivElement>((_, ref) => {
   // thw pwa needs space at the bottom
   const isStandalone = useMediaQuery('(display-mode: standalone)');
-  const { feature } = useFeatureContext();
 
   return (
     <Container ref={ref} isStandalone={isStandalone}>
@@ -106,8 +105,8 @@ export const FeatureHeading = React.forwardRef<HTMLDivElement>((_, ref) => {
           {/* <YellowedBadge /> */}
           <EditNameButton />
         </NameWithEdit>
-        {!feature.point && <StarButton />}
       </HeadingContainer>
+      <QuickActions />
     </Container>
   );
 });

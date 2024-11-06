@@ -185,7 +185,6 @@ solo informazioni che hai verificato di persona o che provengono da fonti attend
   'tags.opening_hours': 'Orari di apertura',
 
   'coordinates.geo_uri': 'GeoURI (phone map app)',
-  'coordinates.copy_value': 'Copy __value__', // keep it short, don't mention clipboard
 
   'layerswitcher.button': 'Livelli',
   'layerswitcher.heading': 'Livelli della mappa',

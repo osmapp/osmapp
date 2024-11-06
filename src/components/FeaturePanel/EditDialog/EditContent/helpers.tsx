@@ -27,3 +27,25 @@ export const CharacterCount = ({
       </Stack>
     </CharacterCountContainer>
   ) : null;
+
+export const getInputTypeForKey = (key: string) => {
+  switch (key) {
+    case 'fax':
+    case 'phone':
+    case 'mobile':
+    case 'contact:phone':
+    case 'contact:whatsapp':
+    case 'contact:mobile':
+    case 'contact:tty':
+    case 'contact:sms':
+    case 'contact:fax':
+      return 'tel';
+    case 'contact:website':
+    case 'website':
+      return 'url';
+    case 'contact:email':
+    case 'email':
+      return 'email';
+  }
+  return 'text';
+};

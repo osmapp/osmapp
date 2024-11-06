@@ -12,7 +12,7 @@ import { useBoolState } from '../../helpers';
 import { t } from '../../../services/intl';
 import { useFeatureContext } from '../../utils/FeatureContext';
 import { useMapStateContext } from '../../utils/MapStateContext';
-import { getIdEditorLink } from '../../../utils';
+import { getIdEditorLink } from '../../FeaturePanel/helpers/externalLinks';
 import { UserTheme, useUserThemeContext } from '../../../helpers/theme';
 import GithubIcon from '../../../assets/GithubIcon';
 import { LangSwitcher } from './LangSwitcher';

@@ -38,6 +38,12 @@ export const getUrlForTag = (k: string, v: string) => {
   if (k === 'website') {
     return v.match(urlRegExp) ? v : `http://${v}`;
   }
+  if (k === 'mapillary' && v.match(/^\d+$/)) {
+    return `https://www.mapillary.com/app/?pKey=${v}&focus=photo`;
+  }
+  if (k === 'panoramax') {
+    return `https://panoramax.xyz/#focus=pic&pic=${v}`;
+  }
   if (k.match(/^(contact:)?email$/)) {
     return `mailto:${v}`;
   }

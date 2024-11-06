@@ -15,6 +15,7 @@ import { join } from '../utils';
 import { clearFeatureCache } from './osmApi';
 import { isBrowser } from '../components/helpers';
 import { getLabel } from '../helpers/featureLabel';
+import { fetchJson } from './fetch';
 
 const PROD_CLIENT_ID = 'vWUdEL3QMBCB2O9q8Vsrl3i2--tcM34rKrxSHR9Vg68';
 
@@ -225,6 +226,15 @@ export const editOsmFeature = async (
   newTags: FeatureTags,
   isCancelled: boolean,
 ): Promise<SuccessInfo> => {
+  const newestVersion = await fetchJson(
+    `https://api.openstreetmap.org/api/0.6/${feature.osmMeta.type}/${feature.osmMeta.id}.json`,
+  ).then(({ elements }) => elements[0].version as number);
+  const loadedVersion = feature.osmMeta.version;
+
+  if (loadedVersion !== newestVersion) {
+    throw new Error('The object has been updated, reload and try again');
+  }
+
   const apiId = prod ? feature.osmMeta : TEST_OSM_ID;
   const changesetComment = getChangesetComment(comment, isCancelled, feature);
   const changesetXml = getChangesetXml({ changesetComment, feature });

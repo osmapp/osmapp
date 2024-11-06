@@ -16,7 +16,9 @@ const TooltipContent = ({ image }: { image: ImageType }) => (
       <>
         <br />
         <br />
-        {t('featurepanel.uncertain_image')}
+        {t('featurepanel.uncertain_image', {
+          from: image.provider ?? 'Mapillary',
+        })}
       </>
     )}
   </>

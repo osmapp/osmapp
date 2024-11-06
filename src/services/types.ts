@@ -1,5 +1,6 @@
 import type Vocabulary from '../locales/vocabulary';
 import type { getSchemaForFeature } from './tagging/idTaggingScheme';
+import type { Polygon } from 'geojson';
 
 export type OsmType = 'node' | 'way' | 'relation';
 export type OsmId = {
@@ -22,7 +23,7 @@ export type ImageDefFromTag = {
 };
 export type ImageDefFromCenter = {
   type: 'center';
-  service: 'mapillary' | 'fody';
+  service: 'mapillary' | 'fody' | 'kartaview' | 'panoramax';
   center: LonLat;
 };
 export type ImageDef = ImageDefFromTag | ImageDefFromCenter;
@@ -51,10 +52,10 @@ export interface LineString {
 
 export interface GeometryCollection {
   type: 'GeometryCollection';
-  geometries: Array<Point | LineString | GeometryCollection>;
+  geometries: Array<Point | LineString | GeometryCollection | Polygon>;
 }
 
-export type FeatureGeometry = Point | LineString | GeometryCollection;
+export type FeatureGeometry = Point | LineString | GeometryCollection | Polygon;
 
 export const isPoint = (geometry: FeatureGeometry): geometry is Point =>
   geometry?.type === 'Point';
@@ -64,6 +65,8 @@ export const isLineString = (
 export const isGeometryCollection = (
   geometry: FeatureGeometry,
 ): geometry is GeometryCollection => geometry?.type === 'GeometryCollection';
+export const isPolygon = (geometry: FeatureGeometry): geometry is Polygon =>
+  geometry?.type === 'Polygon';
 
 export type FeatureTags = {
   [key: string]: string;

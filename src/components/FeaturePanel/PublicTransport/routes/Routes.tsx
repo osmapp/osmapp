@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LineInformation, requestLines } from './requestRoutes';
 import { PublicTransportCategory } from './PublicTransportWrapper';
 import { DotLoader } from '../../../helpers';
 import { sortByReference } from './helpers';
 import { useFeatureContext } from '../../../utils/FeatureContext';
-import { getOverpassSource } from '../../../../services/mapStorage';
 import groupBy from 'lodash/groupBy';
 import { useQuery } from 'react-query';
 import { Typography } from '@mui/material';
+import { useShowOnMap } from './useShowOnMap';
 
 const categories = [
   'tourism',
@@ -23,13 +23,30 @@ const categories = [
   'unknown',
 ];
 
-const PublicTransportDisplay = ({ routes }) => {
+type PublicTransportDisplayProps = {
+  routes: LineInformation[];
+  geoJson: GeoJSON.FeatureCollection;
+};
+
+const PublicTransportDisplay = ({
+  routes,
+  geoJson,
+}: PublicTransportDisplayProps) => {
+  const [shownCategories, setShownCategories] = useState([
+    'subway',
+    'commuter',
+    'regional',
+    'bus',
+  ]);
+
   const grouped = groupBy(routes, ({ service }) => {
     const base = service?.split(';')[0];
     return categories.includes(base) ? base : 'unknown';
   });
   const entries = Object.entries(grouped) as [string, LineInformation[]][];
   const sorted = sortByReference(entries, categories, ([category]) => category);
+
+  useShowOnMap(geoJson, shownCategories);
 
   return (
     <>
@@ -38,7 +55,11 @@ const PublicTransportDisplay = ({ routes }) => {
           key={category}
           category={category}
           lines={lines}
-          showHeading={entries.length > 1}
+          showHeading={sorted.length > 1}
+          shownCategories={shownCategories}
+          onChange={(categories) => {
+            setShownCategories(categories);
+          }}
         />
       ))}
     </>
@@ -53,22 +74,12 @@ export const PublicTransportInner = () => {
     requestLines(type, Number(id)),
   );
 
-  React.useEffect(() => {
-    if (!data) {
-      return;
-    }
-
-    const source = getOverpassSource();
-    source?.setData(data.geoJson);
-    return () => {
-      source?.setData({ type: 'FeatureCollection', features: [] });
-    };
-  }, [data]);
-
   return (
     <div>
       {(status === 'loading' || status === 'idle') && <DotLoader />}
-      {status === 'success' && <PublicTransportDisplay routes={data.routes} />}
+      {status === 'success' && (
+        <PublicTransportDisplay routes={data.routes} geoJson={data.geoJson} />
+      )}
       {status === 'error' && (
         <Typography color="secondary" paragraph>
           Error

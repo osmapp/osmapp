@@ -4,6 +4,7 @@ import {
   isGeometryCollection,
   isLineString,
   isPoint,
+  isPolygon,
   Position,
 } from './types';
 
@@ -64,6 +65,10 @@ export const getCenter = (geometry: FeatureGeometry): Position => {
   if (isGeometryCollection(geometry)) {
     const allPoints = getPointsRecursive(geometry);
     return getCenterOfBbox(allPoints);
+  }
+  if (isPolygon(geometry)) {
+    const outerCoords = geometry.coordinates[0];
+    return getCenterOfBbox(outerCoords);
   }
 
   return undefined;

@@ -41,6 +41,7 @@ test('ImageFromCenter - mapillary', async () => {
     imageUrl: 'mapillary_url_1024',
     link: '321151246189360',
     linkUrl: 'https://www.mapillary.com/app/?focus=photo&pKey=321151246189360',
+    provider: 'Mapillary',
     uncertainImage: true,
     panoramaUrl: 'mapillary_url_original',
   });

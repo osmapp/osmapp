@@ -1,5 +1,6 @@
 import { LonLat } from '../../services/types';
 import { Star } from '../utils/StarsContext';
+import { ASTNode } from './queryWizard/ast';
 
 type GenericOption<T extends string, U extends Object | null> = {
   type: T;
@@ -39,7 +40,7 @@ export type OverpassOption = GenericOption<
   'overpass',
   {
     query?: string;
-    tags?: Record<string, string>;
+    ast?: ASTNode;
     inputValue: string;
     label: string;
   }

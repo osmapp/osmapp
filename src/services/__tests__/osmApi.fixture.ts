@@ -37,6 +37,8 @@ export const NODE_FEATURE = {
     amenity: 'library',
   },
   imageDefs: [
+    { type: 'center', service: 'panoramax', center: [14.3904481, 50.103985] },
+    { type: 'center', service: 'kartaview', center: [14.3904481, 50.103985] },
     { type: 'center', service: 'mapillary', center: [14.3904481, 50.103985] },
   ],
 };
@@ -70,7 +72,11 @@ export const WAY_FEATURE = {
   },
   properties: { class: 'school', subclass: 'school' },
   tags: { amenity: 'school' },
-  imageDefs: [{ type: 'center', service: 'mapillary', center: [14, 50] }],
+  imageDefs: [
+    { type: 'center', service: 'panoramax', center: [14, 50] },
+    { type: 'center', service: 'kartaview', center: [14, 50] },
+    { type: 'center', service: 'mapillary', center: [14, 50] },
+  ],
 };
 export const RELATION = {
   elements: [
@@ -134,5 +140,9 @@ export const RELATION_FEATURE = {
     amenity: 'university',
     type: 'multipolygon',
   },
-  imageDefs: [{ type: 'center', service: 'mapillary', center: [15, 51] }],
+  imageDefs: [
+    { type: 'center', service: 'panoramax', center: [15, 51] },
+    { type: 'center', service: 'kartaview', center: [15, 51] },
+    { type: 'center', service: 'mapillary', center: [15, 51] },
+  ],
 };

@@ -12,6 +12,7 @@ See also [SotM 2021 talk](https://github.com/zbycz/osmapp-talk).
 
 Open climbing maps and topos. Photos are uploaded to _Wikimedia Commons_ and route data stored in _OpenStreetMap_ ([spec](https://wiki.openstreetmap.org/wiki/Key:wikimedia_commons:path)).
 
+- **[Story behind openclimbing.org](https://medium.com/@jvaclavik/story-behind-openclimbing-org-ab448939c6ac)**
 - master branch: https://openclimbing.org
 - examples: [Prokopské údolí](https://openclimbing.org/relation/17262674),
   [Roviště](https://openclimbing.org/relation/17130100),
@@ -35,7 +36,7 @@ You may [add issues](https://github.com/zbycz/osmapp/issues) here on GitHub, or 
 
 - **clickable map** – poi, cities, localities, ponds (more coming soon)
 - **feature panel** – presets and fields from iD editor
-  - Display multiple images from Wikipedia, Wikidata, Commons, Mapillary or Fody
+  - Display multiple images from Wikipedia, Wikidata, Commons, Mapillary, KartaView, Panoramax or Fody
   - Line numbers on public transport stops
   - Runway table on airports
 - **editing** – Save changes with osm login. Insert note for anonymous users.
