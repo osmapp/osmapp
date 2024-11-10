@@ -79,7 +79,7 @@ export type RelationMember = {
 };
 
 // TODO split in two types /extend/
-export interface Feature {
+export type Feature = {
   point?: boolean; // TODO rename to isMarker or isCoords
   type: 'Feature';
   id?: number; // for map hover effect
@@ -125,7 +125,7 @@ export interface Feature {
   state?: { hover: boolean };
   skeleton?: boolean; // that means loading is in progress
   nonOsmObject?: boolean;
-}
+};
 
 export type MessagesType = typeof Vocabulary;
 export type TranslationId = keyof MessagesType;
