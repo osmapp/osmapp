@@ -33,6 +33,7 @@
     "@openstreetmap/id-tagging-schema": "^6.8.1",
     "@sentry/nextjs": "^8.34.0",
     "@teritorio/openmaptiles-gl-language": "^1.5.4",
+    "@xata.io/client": "^0.30.1",
     "@xmldom/xmldom": "^0.9.3",
     "accept-language-parser": "^1.5.0",
     "autosuggest-highlight": "^3.3.4",
