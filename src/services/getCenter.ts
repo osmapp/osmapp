@@ -5,7 +5,7 @@ import {
   isLineString,
   isPoint,
   isPolygon,
-  Position,
+  LonLat,
 } from './types';
 
 export type NamedBbox = {
@@ -15,7 +15,7 @@ export type NamedBbox = {
   n: number;
 };
 
-export const getBbox = (coordinates: Position[]): NamedBbox => {
+export const getBbox = (coordinates: LonLat[]): NamedBbox => {
   const [firstX, firstY] = coordinates[0];
   const initialBbox = { w: firstX, s: firstY, e: firstX, n: firstY };
 
@@ -30,16 +30,17 @@ export const getBbox = (coordinates: Position[]): NamedBbox => {
   );
 };
 
-const getCenterOfBbox = (points: Position[]) => {
+const getCenterOfBbox = (points: LonLat[]): LonLat | undefined => {
   if (!points.length) return undefined;
 
-  const { w, s, e, n } = getBbox(points); // [WSEN]
-  const lon = (w + e) / 2; // flat earth rulezz
-  const lat = (s + n) / 2;
+  const { w, s, e, n } = getBbox(points);
+  const lon = w + (e - w) / 2; // flat earth rulezz
+  const lat = s + (n - s) / 2;
+
   return [lon, lat];
 };
 
-const getPointsRecursive = (geometry: GeometryCollection): Position[] =>
+const getPointsRecursive = (geometry: GeometryCollection): LonLat[] =>
   geometry.geometries.flatMap((subGeometry) => {
     if (isGeometryCollection(subGeometry)) {
       return getPointsRecursive(subGeometry);
@@ -53,7 +54,7 @@ const getPointsRecursive = (geometry: GeometryCollection): Position[] =>
     return [];
   });
 
-export const getCenter = (geometry: FeatureGeometry): Position => {
+export const getCenter = (geometry: FeatureGeometry): LonLat => {
   if (isPoint(geometry)) {
     return geometry.coordinates;
   }
