@@ -1,0 +1,92 @@
+{
+  "id": "mig_cso99kp32vjpfm25jl70",
+  "checksum": "1:e4b0e01303c68771fd0139e5dc9ad466c630d7ab59ad428b8fc570348284df40",
+  "operations": [
+    {
+      "addTable": {
+        "table": "climbing_tiles"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "type",
+          "type": "text"
+        },
+        "table": "climbing_tiles"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "lon",
+          "type": "float"
+        },
+        "table": "climbing_tiles"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "lat",
+          "type": "float"
+        },
+        "table": "climbing_tiles"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "osmType",
+          "type": "text"
+        },
+        "table": "climbing_tiles"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "osmId",
+          "type": "int"
+        },
+        "table": "climbing_tiles"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "osmVersion",
+          "type": "int"
+        },
+        "table": "climbing_tiles"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "name",
+          "type": "text"
+        },
+        "table": "climbing_tiles"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "count",
+          "type": "int"
+        },
+        "table": "climbing_tiles"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "json",
+          "type": "json"
+        },
+        "table": "climbing_tiles"
+      }
+    }
+  ]
+}

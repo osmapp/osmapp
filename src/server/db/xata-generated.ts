@@ -6,12 +6,32 @@ import type {
   XataRecord,
 } from '@xata.io/client';
 
-const tables = [] as const;
+const tables = [
+  {
+    name: 'climbing_tiles',
+    columns: [
+      { name: 'type', type: 'text' },
+      { name: 'lon', type: 'float' },
+      { name: 'lat', type: 'float' },
+      { name: 'osmType', type: 'text' },
+      { name: 'osmId', type: 'int' },
+      { name: 'osmVersion', type: 'int' },
+      { name: 'name', type: 'text' },
+      { name: 'count', type: 'int' },
+      { name: 'json', type: 'json' },
+    ],
+  },
+] as const;
 
 export type SchemaTables = typeof tables;
 export type InferredTypes = SchemaInference<SchemaTables>;
 
-export type DatabaseSchema = {};
+export type ClimbingTiles = InferredTypes['climbing_tiles'];
+export type ClimbingTilesRecord = ClimbingTiles & XataRecord;
+
+export type DatabaseSchema = {
+  climbing_tiles: ClimbingTilesRecord;
+};
 
 const DatabaseClient = buildClient();
 
