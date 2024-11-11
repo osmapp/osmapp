@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { climbingTile } from '../../src/server/climbing-tiles/algo';
+import { climbingTile } from '../../../src/server/climbing-tiles/algo';
 
-// TODO upgrade Nextjs and use export async function POST(request: NextRequest) {
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const json = await climbingTile();
