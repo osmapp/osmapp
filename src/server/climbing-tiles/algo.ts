@@ -150,7 +150,7 @@ export const refresh = async () => {
   };
 };
 
-// all 8 secs
+// all 3 secs, 2MB
 export const climbingTile = async () => {
   const start = performance.now();
   const alldata = await xata.db.climbing_tiles
@@ -168,7 +168,7 @@ export const climbingTile = async () => {
     ...record.geojson,
     properties: {
       ...record.geojson.properties,
-      type: record.type,
+      type: record.type, // TODO add to main geojson?
     },
   }));
 };
