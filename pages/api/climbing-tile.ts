@@ -1,11 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { serverFetchOsmUser } from '../../src/services/osmApiAuthServer';
-import { fetchAll } from '../../src/server/climbing-tiles/algo';
+import { climbingTile } from '../../src/server/climbing-tiles/algo';
 
 // TODO upgrade Nextjs and use export async function POST(request: NextRequest) {
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const json = await fetchAll();
+    const json = await climbingTile();
 
     res.status(200).json(json);
   } catch (err) {
