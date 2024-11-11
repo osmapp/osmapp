@@ -8,7 +8,6 @@ import {
 } from '../../../services/types';
 import { join } from '../../../utils';
 import { getCenter } from '../../../services/getCenter';
-import { getPoiClass } from '../../../services/getPoiClass';
 
 type OsmType = 'node' | 'way' | 'relation';
 type OsmNode = {
@@ -40,7 +39,7 @@ type OsmResponse = {
   elements: OsmItem[];
 };
 
-type Feature<T extends FeatureGeometry = FeatureGeometry> = {
+export type GeojsonFeature<T extends FeatureGeometry = FeatureGeometry> = {
   type: 'Feature';
   id: number;
   osmMeta: OsmId;
@@ -58,9 +57,9 @@ type Feature<T extends FeatureGeometry = FeatureGeometry> = {
 };
 
 type Lookup = {
-  node: Record<number, Feature<Point>>;
-  way: Record<number, Feature<LineString>>;
-  relation: Record<number, Feature<GeometryCollection>>;
+  node: Record<number, GeojsonFeature<Point>>;
+  way: Record<number, GeojsonFeature<LineString>>;
+  relation: Record<number, GeojsonFeature<GeometryCollection>>;
 };
 
 const convertOsmIdToMapId = (apiId: OsmId) => {
@@ -93,7 +92,7 @@ const getLabel = (tags: FeatureTags, osmappRouteCount: number) =>
 const convert = <T extends OsmItem, TGeometry extends FeatureGeometry>(
   element: T,
   geometryFn: (element: T) => TGeometry,
-): Feature<TGeometry> => {
+): GeojsonFeature<TGeometry> => {
   const { type, id, tags = {} } = element;
   const geometry = geometryFn(element);
   const center = getCenter(geometry) ?? undefined;
@@ -162,7 +161,7 @@ const getRelationGeomFn =
   };
 
 const addToLookup = <T extends FeatureGeometry>(
-  items: Feature<T>[],
+  items: GeojsonFeature<T>[],
   lookup: Lookup,
 ) => {
   items.forEach((item) => {
@@ -172,8 +171,8 @@ const addToLookup = <T extends FeatureGeometry>(
 };
 
 const getRelationWithAreaCount = (
-  relations: Feature[],
-  lookup: Record<string, Record<string, Feature>>,
+  relations: GeojsonFeature[],
+  lookup: Record<string, Record<string, GeojsonFeature>>,
 ) =>
   relations.map((relation) => {
     if (relation.tags?.climbing === 'area') {
@@ -200,14 +199,6 @@ const getRelationWithAreaCount = (
 
     return relation;
   });
-
-export const geometryToPoint = (feature: Feature) => ({
-  ...feature,
-  geometry: {
-    type: 'Point',
-    coordinates: feature.center,
-  },
-});
 
 export const overpassToGeojsons = (response: OsmResponse) => {
   const { nodes, ways, relations } = getItems(response.elements);
