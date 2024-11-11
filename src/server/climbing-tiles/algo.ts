@@ -18,7 +18,7 @@ import { chunk } from 'lodash';
 import { EditableData, TransactionOperation } from '@xata.io/client';
 import { ClimbingTilesRecord, DatabaseSchema } from '../db/xata-generated';
 
-export const geometryToPoint = (feature: GeojsonFeature): GeojsonFeature => ({
+export const centerGeometry = (feature: GeojsonFeature): GeojsonFeature => ({
   ...feature,
   geometry: {
     type: 'Point',
@@ -91,22 +91,35 @@ const getNewRecords = async () => {
         lat: way.center[1],
         name: way.tags.name,
         count: way.properties.osmappRouteCount,
-        geojson: prepareGeojson(geometryToPoint(way)),
+        geojson: prepareGeojson(centerGeometry(way)),
       });
     }
   }
 
   for (const relation of geojsons.relation) {
-    records.push({
-      type: 'group',
-      osmType: 'relation',
-      osmId: relation.osmMeta.id,
-      lon: relation.center[0],
-      lat: relation.center[1],
-      name: relation.tags.name,
-      count: relation.properties.osmappRouteCount,
-      geojson: prepareGeojson(geometryToPoint(relation)),
-    });
+    if (relation.tags.climbing === 'route') {
+      records.push({
+        type: 'route',
+        osmType: 'relation',
+        osmId: relation.osmMeta.id,
+        lon: relation.center[0], // TODO maybe use first point in future
+        lat: relation.center[1],
+        name: relation.tags.name,
+        count: relation.properties.osmappRouteCount,
+        geojson: prepareGeojson(centerGeometry(relation)),
+      });
+    } else {
+      records.push({
+        type: 'group',
+        osmType: 'relation',
+        osmId: relation.osmMeta.id,
+        lon: relation.center[0],
+        lat: relation.center[1],
+        name: relation.tags.name,
+        count: relation.properties.osmappRouteCount,
+        geojson: prepareGeojson(centerGeometry(relation)),
+      });
+    }
   }
 
   return records;
@@ -133,7 +146,7 @@ export const refresh = async () => {
   return {
     createdRecords: records.length,
     durationMs: Math.round(performance.now() - start), // total 69 seconds
-    sizeKb: Math.round(JSON.stringify(records).length / 1000),
+    sizeBytes: JSON.stringify(records).length,
   };
 };
 
