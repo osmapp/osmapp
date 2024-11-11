@@ -107,6 +107,7 @@ const convert = <T extends OsmItem, TGeometry extends FeatureGeometry>(
       : undefined;
   const properties = {
     climbing: tags?.climbing,
+    name: tags?.name,
     osmappType: type,
     osmappRouteCount,
     osmappLabel: getLabel(tags, osmappRouteCount),
