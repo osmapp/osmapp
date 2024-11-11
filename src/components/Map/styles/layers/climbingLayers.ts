@@ -37,7 +37,7 @@ const linearByRouteCount = (
 ): ExpressionSpecification => [
   'interpolate',
   ['linear'],
-  ['get', 'osmappRouteCount'],
+  ['coalesce', ['get', 'osmappRouteCount'], 0],
   from,
   a,
   to,
@@ -75,8 +75,9 @@ const sortKey = [
   -1,
   [
     '+',
-    ['get', 'osmappRouteCount'],
+    ['coalesce', ['get', 'osmappRouteCount'], 0],
     ['case', ['get', 'osmappHasImages'], 99999, 0], // preference for items with images
+    ['case', ['get', 'name'], 2, 0], // prefer items with name
   ],
 ] as DataDrivenPropertyValueSpecification<number>;
 
