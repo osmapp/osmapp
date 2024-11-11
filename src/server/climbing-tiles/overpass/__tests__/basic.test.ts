@@ -132,3 +132,5 @@ const elements: OsmItem[] = [
     },
   },
 ];
+
+test('noop', () => {});
