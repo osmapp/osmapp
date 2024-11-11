@@ -8,7 +8,7 @@ import type {
 
 const tables = [
   {
-    name: 'climbing_tiles',
+    name: 'climbing_tiles-oldsunday',
     columns: [
       { name: 'type', type: 'text' },
       { name: 'lon', type: 'float' },
@@ -21,15 +21,32 @@ const tables = [
       { name: 'json', type: 'json' },
     ],
   },
+  {
+    name: 'climbing_tiles',
+    columns: [
+      { name: 'type', type: 'text' },
+      { name: 'lon', type: 'float' },
+      { name: 'lat', type: 'float' },
+      { name: 'osmType', type: 'text' },
+      { name: 'osmId', type: 'int' },
+      { name: 'name', type: 'text' },
+      { name: 'count', type: 'int' },
+      { name: 'geojson', type: 'json' },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
 export type InferredTypes = SchemaInference<SchemaTables>;
 
+export type ClimbingTilesOldsunday = InferredTypes['climbing_tiles-oldsunday'];
+export type ClimbingTilesOldsundayRecord = ClimbingTilesOldsunday & XataRecord;
+
 export type ClimbingTiles = InferredTypes['climbing_tiles'];
 export type ClimbingTilesRecord = ClimbingTiles & XataRecord;
 
 export type DatabaseSchema = {
+  'climbing_tiles-oldsunday': ClimbingTilesOldsundayRecord;
   climbing_tiles: ClimbingTilesRecord;
 };
 

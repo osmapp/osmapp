@@ -181,8 +181,9 @@ const mixed: LayerSpecification = {
   maxzoom: 20,
   filter: [
     'all',
-    ['==', 'osmappType', 'relationPoint'],
-    ['in', 'climbing', 'area', 'crag'],
+    ['==', 'type', 'group'],
+    // ['==', 'osmappType', 'relationPoint'],
+    // ['in', 'climbing', 'area', 'crag'],
   ],
   layout: {
     'icon-image': ifCrag(

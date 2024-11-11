@@ -9,9 +9,14 @@
 // fs.writeFile("data.json", JSON.stringify(data, null, 2));
 
 import { xata } from '../db/db';
-import { overpassToGeojsons } from './overpass/overpassToGeojsons';
+import {
+  geometryToPoint,
+  overpassToGeojsons,
+} from './overpass/overpassToGeojsons';
 import * as fs from 'fs/promises';
 import { chunk } from 'lodash';
+import { EditableData, TransactionOperation } from '@xata.io/client';
+import { ClimbingTilesRecord, DatabaseSchema } from '../db/xata-generated';
 
 type OsmType = 'node' | 'way' | 'relation';
 type OsmNode = {
@@ -174,27 +179,27 @@ const elements: OsmItem[] = [
   },
 ];
 
-const getInserts = async () => {
+const getNewRecords = async () => {
   const file = await fs.readFile('data3_42s_25mb.json', 'utf8');
   const data = JSON.parse(file); // 200 ms
   const geojsons = overpassToGeojsons(data); // 700 ms
 
-  const inserts = [];
+  const records: Partial<EditableData<ClimbingTilesRecord>>[] = [];
 
   for (const node of geojsons.node) {
     if (node.tags?.climbing === 'route_bottom') {
-      inserts.push({
+      records.push({
         type: 'route',
         osmType: 'node',
         osmId: node.osmMeta.id,
         lon: node.geometry.coordinates[0],
         lat: node.geometry.coordinates[1],
         name: node.tags.name,
-        json: node,
+        geojson: node,
       });
     }
     if (node.tags?.climbing === 'crag') {
-      inserts.push({
+      records.push({
         type: 'group',
         osmType: 'node',
         osmId: node.osmMeta.id,
@@ -202,7 +207,7 @@ const getInserts = async () => {
         lat: node.geometry.coordinates[1],
         name: node.tags.name,
         count: node.properties.osmappRouteCount,
-        json: node,
+        geojson: node,
       });
     }
   }
@@ -210,17 +215,17 @@ const getInserts = async () => {
   for (const way of geojsons.way) {
     if (way.tags.climbing === 'route') {
       const start = way.geometry.coordinates[0];
-      inserts.push({
+      records.push({
         type: 'route',
         osmType: 'way',
         osmId: way.osmMeta.id,
         lon: start[0],
         lat: start[1],
         name: way.tags.name,
-        json: { ...way, geometry: { type: 'Point', coordinates: start } },
+        geojson: { ...way, geometry: { type: 'Point', coordinates: start } },
       });
     } else {
-      inserts.push({
+      records.push({
         type: 'group',
         osmType: 'way',
         osmId: way.osmMeta.id,
@@ -228,13 +233,13 @@ const getInserts = async () => {
         lat: way.center[1],
         name: way.tags.name,
         count: way.properties.osmappRouteCount,
-        json: way,
+        geojson: geometryToPoint(way),
       });
     }
   }
 
   for (const relation of geojsons.relation) {
-    inserts.push({
+    records.push({
       type: 'group',
       osmType: 'relation',
       osmId: relation.osmMeta.id,
@@ -242,36 +247,38 @@ const getInserts = async () => {
       lat: relation.center[1],
       name: relation.tags.name,
       count: relation.properties.osmappRouteCount,
-      json: relation,
+      geojson: geometryToPoint(relation),
     });
   }
 
-  return inserts;
+  return records;
 };
 
-export const fetchAll = async () => {
-  return;
-
+export const refresh = async () => {
+  const start = performance.now();
   await xata.sql`DELETE FROM climbing_tiles`;
 
-  const inserts = await getInserts(); // 16k inserts
-
+  const inserts = await getNewRecords(); // ~ 16k records
   const chunks = chunk(inserts, 1000);
-
   for (const chunk of chunks) {
     await xata.transactions.run(
-      chunk.map((record) => ({
-        insert: {
-          table: 'climbing_tiles',
-          record: { ...record, json: JSON.stringify(record.json, null, 2) },
-        },
-      })),
+      // avg 700kb per 1000 records, takes ~5 secs
+      chunk.map(
+        (record) =>
+          ({
+            insert: {
+              table: 'climbing_tiles',
+              record: { ...record, json: JSON.stringify(record.geojson) },
+            },
+          }) as TransactionOperation<DatabaseSchema, 'climbing_tiles'>,
+      ),
     );
-
-    // avg 700kb per 1000 records, takes 5 secs
   }
 
-  // total 69 seconds
+  return {
+    createdRecords: inserts.length,
+    durationMs: Math.round(performance.now() - start), // total 69 seconds
+  };
 };
 
 // all 8 secs
@@ -279,11 +286,24 @@ export const climbingTile = async () => {
   const start = performance.now();
   const alldata = await xata.db.climbing_tiles
     .filter({
-      type: 'route',
+      type: 'group',
     })
     .getAll();
+  // .getMany({
+  //   pagination: { size: 1000, offset: 0 },
+  // });
 
   console.log('climbingTile', performance.now() - start);
 
-  return alldata.map((record) => record.json);
+  return alldata.map((record) => ({
+    ...record.geojson,
+    properties: {
+      ...record.geojson.properties,
+      type: record.type,
+    },
+    geometry: {
+      type: 'Point',
+      coordinates: [record.lon, record.lat],
+    },
+  }));
 };

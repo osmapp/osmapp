@@ -46,9 +46,7 @@ type Feature<T extends FeatureGeometry = FeatureGeometry> = {
   osmMeta: OsmId;
   tags: FeatureTags;
   properties: {
-    class: string;
-    subclass: string;
-    [key: string]: string | number | boolean;
+    climbing?: string;
     osmappRouteCount?: number;
     osmappHasImages?: boolean;
     osmappType?: 'node' | 'way' | 'relation';
@@ -109,8 +107,7 @@ const convert = <T extends OsmItem, TGeometry extends FeatureGeometry>(
         )
       : undefined;
   const properties = {
-    ...getPoiClass(tags),
-    ...tags,
+    climbing: tags?.climbing,
     osmappType: type,
     osmappRouteCount,
     osmappLabel: getLabel(tags, osmappRouteCount),
@@ -203,6 +200,14 @@ const getRelationWithAreaCount = (
 
     return relation;
   });
+
+export const geometryToPoint = (feature: Feature) => ({
+  ...feature,
+  geometry: {
+    type: 'Point',
+    coordinates: feature.center,
+  },
+});
 
 export const overpassToGeojsons = (response: OsmResponse) => {
   const { nodes, ways, relations } = getItems(response.elements);
