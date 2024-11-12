@@ -1,11 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { climbingTile, refresh } from '../../../src/server/climbing-tiles/algo';
+import { climbingTile } from '../../../src/server/climbing-tiles/climbing-tile';
+import { refresh } from '../../../src/server/climbing-tiles/refresh';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const json = await refresh();
+    res.writeHead(200, {
+      Connection: 'keep-alive',
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Transfer-Encoding': 'chunked',
+    });
 
-    res.status(200).json(json);
+    const writeCallback = (line: string) => {
+      res.write(line + '\n');
+    };
+
+    await refresh(writeCallback);
+
+    res.end();
   } catch (err) {
     console.error(err); // eslint-disable-line no-console
     res.status(err.code ?? 400).send(String(err));

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { climbingTile } from '../../../src/server/climbing-tiles/algo';
+import { climbingTile } from '../../../src/server/climbing-tiles/climbing-tile';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
