@@ -11,6 +11,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     const writeCallback = (line: string) => {
+      console.log(line); // eslint-disable-line no-console
       res.write(line + '\n');
     };
 

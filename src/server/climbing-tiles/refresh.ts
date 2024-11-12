@@ -8,6 +8,7 @@ import { chunk } from 'lodash';
 import { EditableData, TransactionOperation } from '@xata.io/client';
 import { ClimbingTilesRecord, DatabaseSchema } from '../db/xata-generated';
 import { encodeUrl } from '../../helpers/utils';
+import { fetchJson } from '../../services/fetch';
 
 export const centerGeometry = (feature: GeojsonFeature): GeojsonFeature => ({
   ...feature,
@@ -28,15 +29,25 @@ const prepareGeojson = (
     properties: { ...properties, type },
   });
 
-const fetchFromOverpass = async (): Promise<OsmResponse> => {
+const fetchFromOverpass = async () => {
   // takes about 42 secs, 25MB
   const query = `[out:json][timeout:80];(nwr["climbing"];nwr["sport"="climbing"];);>>;out qt;`;
-  const res = await fetch('https://overpass-api.de/api/interpreter', {
-    body: encodeUrl`data=${query}`,
-    method: 'POST',
-  });
+  const data = await fetchJson<OsmResponse>(
+    'https://overpass-api.de/api/interpreter',
+    {
+      body: encodeUrl`data=${query}`,
+      method: 'POST',
+      nocache: true,
+    },
+  );
 
-  return await res.json();
+  if (data.elements.length < 1000) {
+    throw new Error(
+      `Overpass returned too few elements. Data:${JSON.stringify(data).substring(0, 200)}`,
+    );
+  }
+
+  return data;
 };
 
 const getNewRecords = async (data: OsmResponse) => {
