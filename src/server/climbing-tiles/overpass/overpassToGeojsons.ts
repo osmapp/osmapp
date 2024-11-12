@@ -35,7 +35,7 @@ type OsmRelation = {
   center?: { lat: number; lon: number }; // only for overpass `out center` queries
 };
 type OsmItem = OsmNode | OsmWay | OsmRelation;
-type OsmResponse = {
+export type OsmResponse = {
   elements: OsmItem[];
 };
 

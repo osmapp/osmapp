@@ -1,22 +1,13 @@
-// import {encodeUrl} from "@/utils";
-// import * as fs from "node:fs/promises";
-// const query = `[out:json][timeout:80];(nwr["climbing"];nwr["sport"="climbing"];);>>;out qt;`;
-// const res = await fetch("https://overpass-api.de/api/interpreter", {
-//     "body": encodeUrl`data=${query}`,
-//     "method": "POST"
-// });
-// const data = await res.json();
-// fs.writeFile("data.json", JSON.stringify(data, null, 2));
-
-import { xata } from '../db/db';
 import {
   GeojsonFeature,
+  OsmResponse,
   overpassToGeojsons,
 } from './overpass/overpassToGeojsons';
-import * as fs from 'fs/promises';
+import { xata } from '../db/db';
 import { chunk } from 'lodash';
 import { EditableData, TransactionOperation } from '@xata.io/client';
 import { ClimbingTilesRecord, DatabaseSchema } from '../db/xata-generated';
+import { encodeUrl } from '../../helpers/utils';
 
 export const centerGeometry = (feature: GeojsonFeature): GeojsonFeature => ({
   ...feature,
@@ -26,17 +17,29 @@ export const centerGeometry = (feature: GeojsonFeature): GeojsonFeature => ({
   },
 });
 
-const prepareGeojson = ({ id, geometry, properties }: GeojsonFeature) =>
+const prepareGeojson = (
+  type: string,
+  { id, geometry, properties }: GeojsonFeature,
+) =>
   JSON.stringify({
     type: 'Feature',
     id,
     geometry,
-    properties,
+    properties: { ...properties, type },
   });
 
-const getNewRecords = async () => {
-  const file = await fs.readFile('data3_42s_25mb.json', 'utf8');
-  const data = JSON.parse(file); // 200 ms
+const fetchFromOverpass = async (): Promise<OsmResponse> => {
+  // takes about 42 secs, 25MB
+  const query = `[out:json][timeout:80];(nwr["climbing"];nwr["sport"="climbing"];);>>;out qt;`;
+  const res = await fetch('https://overpass-api.de/api/interpreter', {
+    body: encodeUrl`data=${query}`,
+    method: 'POST',
+  });
+
+  return await res.json();
+};
+
+const getNewRecords = async (data: OsmResponse) => {
   const geojsons = overpassToGeojsons(data); // 700 ms
 
   const records: Partial<EditableData<ClimbingTilesRecord>>[] = [];
@@ -50,7 +53,7 @@ const getNewRecords = async () => {
         lon: node.geometry.coordinates[0],
         lat: node.geometry.coordinates[1],
         name: node.tags.name,
-        geojson: prepareGeojson(node),
+        geojson: prepareGeojson('route', node),
       });
     }
     if (node.tags?.climbing === 'crag') {
@@ -62,7 +65,7 @@ const getNewRecords = async () => {
         lat: node.geometry.coordinates[1],
         name: node.tags.name,
         count: node.properties.osmappRouteCount,
-        geojson: prepareGeojson(node),
+        geojson: prepareGeojson('group', node),
       });
     }
   }
@@ -77,7 +80,7 @@ const getNewRecords = async () => {
         lon: start[0],
         lat: start[1],
         name: way.tags.name,
-        geojson: prepareGeojson({
+        geojson: prepareGeojson('route', {
           ...way,
           geometry: { type: 'Point', coordinates: start },
         }),
@@ -91,7 +94,7 @@ const getNewRecords = async () => {
         lat: way.center[1],
         name: way.tags.name,
         count: way.properties.osmappRouteCount,
-        geojson: prepareGeojson(centerGeometry(way)),
+        geojson: prepareGeojson('group', centerGeometry(way)),
       });
     }
   }
@@ -106,7 +109,7 @@ const getNewRecords = async () => {
         lat: relation.center[1],
         name: relation.tags.name,
         count: relation.properties.osmappRouteCount,
-        geojson: prepareGeojson(centerGeometry(relation)),
+        geojson: prepareGeojson('route', centerGeometry(relation)),
       });
     } else {
       records.push({
@@ -117,7 +120,7 @@ const getNewRecords = async () => {
         lat: relation.center[1],
         name: relation.tags.name,
         count: relation.properties.osmappRouteCount,
-        geojson: prepareGeojson(centerGeometry(relation)),
+        geojson: prepareGeojson('group', centerGeometry(relation)),
       });
     }
   }
@@ -125,15 +128,20 @@ const getNewRecords = async () => {
   return records;
 };
 
-export const refresh = async () => {
+export const refresh = async (writeCallback: (line: string) => void) => {
   const start = performance.now();
+  writeCallback('Deleting old records...');
   await xata.sql`DELETE FROM climbing_tiles`;
 
-  const records = await getNewRecords(); // ~ 16k records
+  writeCallback('Fetching data from Overpass...');
+  const data = await fetchFromOverpass();
+  const records = await getNewRecords(data); // ~ 16k records
+
+  writeCallback(`Inserting new records (${records.length})...`);
   const chunks = chunk(records, 1000);
   for (const chunk of chunks) {
     await xata.transactions.run(
-      // avg 700kb per 1000 records, takes ~5 secs
+      // avg takes ~5 secs
       chunk.map(
         (record) =>
           ({
@@ -141,34 +149,11 @@ export const refresh = async () => {
           }) as TransactionOperation<DatabaseSchema, 'climbing_tiles'>,
       ),
     );
+    writeCallback(`Inserted ${chunk.length} records.`);
   }
 
-  return {
-    createdRecords: records.length,
-    durationMs: Math.round(performance.now() - start), // total 69 seconds
-    sizeBytes: JSON.stringify(records).length,
-  };
-};
-
-// all 3 secs, 2MB
-export const climbingTile = async () => {
-  const start = performance.now();
-  const alldata = await xata.db.climbing_tiles
-    .filter({
-      type: 'group',
-    })
-    .getAll();
-  // .getMany({
-  //   pagination: { size: 1000, offset: 0 },
-  // });
-
-  console.log('climbingTile', performance.now() - start);
-
-  return alldata.map((record) => ({
-    ...record.geojson,
-    properties: {
-      ...record.geojson.properties,
-      type: record.type, // TODO add to main geojson?
-    },
-  }));
+  writeCallback('Done.');
+  writeCallback(`Created records: ${records.length}`);
+  writeCallback(`Duration: ${Math.round(performance.now() - start)} ms`);
+  writeCallback(`Records size: ${JSON.stringify(records).length} bytes`);
 };
