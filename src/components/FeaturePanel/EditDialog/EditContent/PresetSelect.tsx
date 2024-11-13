@@ -63,7 +63,7 @@ const LabelWrapper = styled.div`
 const useMatchTags = (
   feature: Feature,
   tags: FeatureTags,
-  setPreset: Setter<string>,
+  setPresetKey: Setter<string>,
 ) => {
   useEffect(() => {
     (async () => {
@@ -76,9 +76,9 @@ const useMatchTags = (
       const translatedPreset = (await getTranslatedPresets()).find(
         (option) => option.presetKey === foundPreset.presetKey,
       );
-      setPreset(translatedPreset?.presetKey ?? '');
+      setPresetKey(translatedPreset?.presetKey ?? '');
     })();
-  }, [tags, feature, setPreset]);
+  }, [tags, feature, setPresetKey]);
 };
 
 const useOptions = () => {
@@ -90,11 +90,14 @@ const useOptions = () => {
 };
 
 export const PresetSelect = () => {
-  const { tags } = useEditContext().tags;
-  const [preset, setPreset] = useState('');
+  const {
+    tags: { tags },
+    presetKey,
+    setPresetKey,
+  } = useEditContext();
   const { feature } = useFeatureContext();
   const options = useOptions();
-  useMatchTags(feature, tags, setPreset);
+  useMatchTags(feature, tags, setPresetKey);
 
   if (options.length === 0) {
     return null;
@@ -108,7 +111,11 @@ export const PresetSelect = () => {
         </Typography>
       </LabelWrapper>
 
-      <PresetSearchBox value={preset} setValue={setPreset} options={options} />
+      <PresetSearchBox
+        value={presetKey}
+        setValue={setPresetKey}
+        options={options}
+      />
     </Row>
   );
 };
