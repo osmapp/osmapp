@@ -8,30 +8,84 @@ import type {
 
 const tables = [
   {
-    name: 'climbing_tiles-oldsunday',
-    columns: [
-      { name: 'type', type: 'text' },
-      { name: 'lon', type: 'float' },
-      { name: 'lat', type: 'float' },
-      { name: 'osmType', type: 'text' },
-      { name: 'osmId', type: 'int' },
-      { name: 'osmVersion', type: 'int' },
-      { name: 'name', type: 'text' },
-      { name: 'count', type: 'int' },
-      { name: 'json', type: 'json' },
-    ],
-  },
-  {
     name: 'climbing_tiles',
+    checkConstraints: {},
+    foreignKeys: {},
+    primaryKey: ['xata_id'],
+    uniqueConstraints: {},
     columns: [
-      { name: 'type', type: 'text' },
-      { name: 'lon', type: 'float' },
-      { name: 'lat', type: 'float' },
-      { name: 'osmType', type: 'text' },
-      { name: 'osmId', type: 'int' },
-      { name: 'name', type: 'text' },
-      { name: 'count', type: 'int' },
-      { name: 'geojson', type: 'json' },
+      {
+        name: 'count',
+        type: 'int',
+        notNull: true,
+        unique: false,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'geojson',
+        type: 'json',
+        notNull: true,
+        unique: false,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'lat',
+        type: 'float',
+        notNull: true,
+        unique: false,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'lon',
+        type: 'float',
+        notNull: true,
+        unique: false,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'name',
+        type: 'text',
+        notNull: true,
+        unique: false,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'osmId',
+        type: 'int',
+        notNull: true,
+        unique: false,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'osmType',
+        type: 'text',
+        notNull: true,
+        unique: false,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'type',
+        type: 'text',
+        notNull: true,
+        unique: false,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'xata_id',
+        type: 'int',
+        notNull: true,
+        unique: true,
+        defaultValue: null,
+        comment: '',
+      },
     ],
   },
 ] as const;
@@ -39,21 +93,18 @@ const tables = [
 export type SchemaTables = typeof tables;
 export type InferredTypes = SchemaInference<SchemaTables>;
 
-export type ClimbingTilesOldsunday = InferredTypes['climbing_tiles-oldsunday'];
-export type ClimbingTilesOldsundayRecord = ClimbingTilesOldsunday & XataRecord;
-
 export type ClimbingTiles = InferredTypes['climbing_tiles'];
 export type ClimbingTilesRecord = ClimbingTiles & XataRecord;
 
 export type DatabaseSchema = {
-  'climbing_tiles-oldsunday': ClimbingTilesOldsundayRecord;
   climbing_tiles: ClimbingTilesRecord;
 };
 
 const DatabaseClient = buildClient();
 
 const defaultOptions = {
-  databaseURL: 'https://osmapp-tvgiad.us-east-1.xata.sh/db/osmapp',
+  databaseURL:
+    'https://osmapp-tvgiad.us-east-1.xata.sh/db/db_with_direct_access',
 };
 
 export class XataClient extends DatabaseClient<DatabaseSchema> {
