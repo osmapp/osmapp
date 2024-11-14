@@ -1,5 +1,5 @@
 {
-  "databaseURL": "https://osmapp-tvgiad.us-east-1.xata.sh/db/osmapp",
+  "databaseURL": "https://osmapp-tvgiad.us-east-1.xata.sh/db/db_with_direct_access",
   "codegen": {
     "output": "src/server/db/xata-generated.ts"
   }
