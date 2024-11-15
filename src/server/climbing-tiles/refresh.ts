@@ -3,14 +3,13 @@ import {
   OsmResponse,
   overpassToGeojsons,
 } from './overpass/overpassToGeojsons';
-import { xata } from '../db/db';
-import { chunk } from 'lodash';
-import { EditableData, TransactionOperation } from '@xata.io/client';
-import { ClimbingTilesRecord, DatabaseSchema } from '../db/xata-generated';
+import { EditableData } from '@xata.io/client';
+import { ClimbingTilesRecord } from '../db/xata-generated';
 import { encodeUrl } from '../../helpers/utils';
 import { fetchJson } from '../../services/fetch';
 import { LineString, LonLat, Point } from '../../services/types';
 import * as fs from 'node:fs';
+import { Client } from 'pg';
 
 const centerGeometry = (feature: GeojsonFeature): GeojsonFeature<Point> => ({
   ...feature,
@@ -76,7 +75,7 @@ const recordsFactory = () => {
       osmType: feature.osmMeta.type,
       osmId: feature.osmMeta.id,
       name: feature.tags.name,
-      count: feature.properties.osmappRouteCount,
+      count: feature.properties.osmappRouteCount || 0,
       lon: coordinates[0],
       lat: coordinates[1],
       geojson: prepareGeojson(type, feature),
@@ -181,9 +180,22 @@ const getNewRecords = async (data: OsmResponse) => {
 };
 
 export const refresh = async (writeCallback: (line: string) => void) => {
+  const client = new Client({
+    user: 'tvgiad',
+    password: 'xau_E0h76BAWwiiGCOqEYZsRoCUQqXEQ3jpM',
+    host: 'us-east-1.sql.xata.sh',
+    port: 5432,
+    database: 'db_with_direct_access:main',
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  });
+
+  await client.connect();
+
   const start = performance.now();
   writeCallback('Deleting old records...');
-  await xata.sql`DELETE FROM climbing_tiles`;
+  await client.query('DELETE FROM climbing_tiles');
 
   writeCallback('Fetching data from Overpass...');
   //const data = await fetchFromOverpass();
@@ -197,6 +209,14 @@ export const refresh = async (writeCallback: (line: string) => void) => {
   const records = await getNewRecords(data); // ~ 16k records
 
   writeCallback(`Inserting new records (${records.length})...`);
+
+  for (const record of records) {
+    await client.query({
+      text: 'INSERT INTO climbing_tiles(type, "osmType", "osmId", name, count, lon, lat, geojson) VALUES($1, $2, $3, $4, $5, $6, $7, $8)',
+      values: Object.values(record),
+    });
+  }
+
   const chunks = chunk(records, 1000);
   for (const chunk of chunks) {
     await xata.transactions.run(
@@ -210,6 +230,8 @@ export const refresh = async (writeCallback: (line: string) => void) => {
     );
     writeCallback(`Inserted ${chunk.length} records.`);
   }
+
+  await client.end();
 
   writeCallback('Done.');
   writeCallback(`Created records: ${records.length}`);
