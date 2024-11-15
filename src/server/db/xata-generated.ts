@@ -105,6 +105,8 @@ const DatabaseClient = buildClient();
 const defaultOptions = {
   databaseURL:
     'https://osmapp-tvgiad.us-east-1.xata.sh/db/db_with_direct_access',
+  apiKey: 'xau_E0h76BAWwiiGCOqEYZsRoCUQqXEQ3jpM',
+  branch: 'main',
 };
 
 export class XataClient extends DatabaseClient<DatabaseSchema> {
