@@ -200,15 +200,13 @@ export const refresh = async (log: (line: string) => void) => {
   await client.connect();
 
   const start = performance.now();
-  log('Deleting old records...');
-  await client.query('DELETE FROM climbing_tiles');
 
   log('Fetching data from Overpass...');
-  // const data = await fetchFromOverpass();
+  const data = await fetchFromOverpass();
   // fs.writeFileSync('../overpass.json', JSON.stringify(data));
-  const data = JSON.parse(
-    fs.readFileSync('../overpass.json').toString(),
-  ) as OsmResponse;
+  // const data = JSON.parse(
+  //   fs.readFileSync('../overpass.json').toString(),
+  // ) as OsmResponse;
   log(`Overpass elements: ${data.elements.length}`);
 
   const records = getNewRecords(data); // ~ 16k records
@@ -217,7 +215,7 @@ export const refresh = async (log: (line: string) => void) => {
   const columns = Object.keys(records[0]);
   const values = records.map((record) => Object.values(record));
   const query = format(
-    `INSERT INTO climbing_tiles(%I) VALUES %L`,
+    `DELETE FROM climbing_tiles;INSERT INTO climbing_tiles(%I) VALUES %L`,
     columns,
     values,
   );
