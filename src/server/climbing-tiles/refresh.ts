@@ -10,6 +10,7 @@ import { fetchJson } from '../../services/fetch';
 import { LineString, LonLat, Point } from '../../services/types';
 import * as fs from 'node:fs';
 import { Client } from 'pg';
+import format from 'pg-format';
 
 const centerGeometry = (feature: GeojsonFeature): GeojsonFeature<Point> => ({
   ...feature,
@@ -93,7 +94,7 @@ const recordsFactory = () => {
   return { records, addRecord, addRecordWithLine };
 };
 
-const getNewRecords = async (data: OsmResponse) => {
+const getNewRecords = (data: OsmResponse) => {
   const geojsons = overpassToGeojsons(data); // 700 ms on 16k items
   const { records, addRecord, addRecordWithLine } = recordsFactory();
 
@@ -179,7 +180,7 @@ const getNewRecords = async (data: OsmResponse) => {
   return records;
 };
 
-export const refresh = async (writeCallback: (line: string) => void) => {
+export const refresh = async (log: (line: string) => void) => {
   const client = new Client({
     user: 'tvgiad',
     password: 'xau_E0h76BAWwiiGCOqEYZsRoCUQqXEQ3jpM',
@@ -194,47 +195,32 @@ export const refresh = async (writeCallback: (line: string) => void) => {
   await client.connect();
 
   const start = performance.now();
-  writeCallback('Deleting old records...');
+  log('Deleting old records...');
   await client.query('DELETE FROM climbing_tiles');
 
-  writeCallback('Fetching data from Overpass...');
-  //const data = await fetchFromOverpass();
-  //fs.writeFileSync('../overpass.json', JSON.stringify(data));
+  log('Fetching data from Overpass...');
+  // const data = await fetchFromOverpass();
+  // fs.writeFileSync('../overpass.json', JSON.stringify(data));
   const data = JSON.parse(
     fs.readFileSync('../overpass.json').toString(),
   ) as OsmResponse;
+  log(`Overpass elements: ${data.elements.length}`);
 
-  console.log('Data:', data.elements.length);
+  const records = getNewRecords(data); // ~ 16k records
+  log(`Records: (${records.length})`);
 
-  const records = await getNewRecords(data); // ~ 16k records
+  const columns = Object.keys(records[0]);
+  const values = records.map((record) => Object.values(record));
+  const query = format(
+    `INSERT INTO climbing_tiles(%I) VALUES %L`,
+    columns,
+    values,
+  );
+  log(`SQL Query length: ${query.length} chars`);
 
-  writeCallback(`Inserting new records (${records.length})...`);
-
-  for (const record of records) {
-    await client.query({
-      text: 'INSERT INTO climbing_tiles(type, "osmType", "osmId", name, count, lon, lat, geojson) VALUES($1, $2, $3, $4, $5, $6, $7, $8)',
-      values: Object.values(record),
-    });
-  }
-
-  const chunks = chunk(records, 1000);
-  for (const chunk of chunks) {
-    await xata.transactions.run(
-      // avg takes ~5 secs
-      chunk.map(
-        (record) =>
-          ({
-            insert: { table: 'climbing_tiles', record },
-          }) as TransactionOperation<DatabaseSchema, 'climbing_tiles'>,
-      ),
-    );
-    writeCallback(`Inserted ${chunk.length} records.`);
-  }
-
+  await client.query(query);
   await client.end();
 
-  writeCallback('Done.');
-  writeCallback(`Created records: ${records.length}`);
-  writeCallback(`Duration: ${Math.round(performance.now() - start)} ms`);
-  writeCallback(`Records size: ${JSON.stringify(records).length} bytes`);
+  log('Done.');
+  log(`Duration: ${Math.round(performance.now() - start)} ms`);
 };
