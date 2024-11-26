@@ -4140,6 +4140,11 @@ gensync@^1.0.0-beta.2:
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.2.tgz#32a6ee76c3d7f52d46b2b1ae5d93fea8580a25e0"
   integrity sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==
 
+geohashing@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/geohashing/-/geohashing-2.0.1.tgz#c081070a2b6ca551930f75ce8586afe0dd179944"
+  integrity sha512-u0H29yhqHEyBBgwv1GJrvqbD33AnQm2lbWOLNbXLZEWVrCKNoblyiWWnVGeYGaM4NNM7rBBTqvJZhZ/CDfrBVw==
+
 geojson-vt@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/geojson-vt/-/geojson-vt-4.0.2.tgz#1162f6c7d61a0ba305b1030621e6e111f847828a"
