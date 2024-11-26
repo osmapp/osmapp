@@ -11,6 +11,7 @@ import { LineString, LonLat, Point } from '../../services/types';
 import * as fs from 'node:fs';
 import { Client } from 'pg';
 import format from 'pg-format';
+import { encodeBase32, decodeBase32 } from 'geohashing';
 
 const centerGeometry = (feature: GeojsonFeature): GeojsonFeature<Point> => ({
   ...feature,
@@ -70,17 +71,21 @@ const recordsFactory = () => {
     type: string,
     coordinates: LonLat,
     feature: GeojsonFeature,
-  ) =>
-    records.push({
+  ) => {
+    const lon = coordinates[0];
+    const lat = coordinates[1];
+    return records.push({
       type,
       osmType: feature.osmMeta.type,
       osmId: feature.osmMeta.id,
       name: feature.tags.name,
       count: feature.properties.osmappRouteCount || 0,
-      lon: coordinates[0],
-      lat: coordinates[1],
+      lon,
+      lat,
+      geohash: encodeBase32(lat, lon, 2),
       geojson: prepareGeojson(type, feature),
     });
+  };
 
   const addRecord = (type: string, feature: GeojsonFeature<Point>) => {
     addRecordRaw(type, feature.geometry.coordinates, feature);
@@ -207,7 +212,7 @@ export const refresh = async (log: (line: string) => void) => {
   log(`Overpass elements: ${data.elements.length}`);
 
   const records = getNewRecords(data); // ~ 16k records
-  log(`Records: (${records.length})`);
+  log(`Records: ${records.length}`);
 
   const columns = Object.keys(records[0]);
   const values = records.map((record) => Object.values(record));

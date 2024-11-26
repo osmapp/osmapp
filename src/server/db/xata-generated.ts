@@ -9,14 +9,33 @@ import type {
 const tables = [
   {
     name: 'climbing_tiles',
-    checkConstraints: {},
+    checkConstraints: {
+      climbing_tiles_xata_id_length_xata_id: {
+        name: 'climbing_tiles_xata_id_length_xata_id',
+        columns: ['xata_id'],
+        definition: 'CHECK ((length(xata_id) < 256))',
+      },
+    },
     foreignKeys: {},
-    primaryKey: ['xata_id'],
-    uniqueConstraints: {},
+    primaryKey: [],
+    uniqueConstraints: {
+      _pgroll_new_climbing_tiles_xata_id_key: {
+        name: '_pgroll_new_climbing_tiles_xata_id_key',
+        columns: ['xata_id'],
+      },
+    },
     columns: [
       {
         name: 'count',
         type: 'int',
+        notNull: false,
+        unique: false,
+        defaultValue: null,
+        comment: '',
+      },
+      {
+        name: 'geohash',
+        type: 'text',
         notNull: true,
         unique: false,
         defaultValue: null,
@@ -49,7 +68,7 @@ const tables = [
       {
         name: 'name',
         type: 'text',
-        notNull: true,
+        notNull: false,
         unique: false,
         defaultValue: null,
         comment: '',
@@ -79,11 +98,87 @@ const tables = [
         comment: '',
       },
       {
+        name: 'xata_createdat',
+        type: 'datetime',
+        notNull: true,
+        unique: false,
+        defaultValue: 'now()',
+        comment: '',
+      },
+      {
         name: 'xata_id',
-        type: 'int',
+        type: 'text',
         notNull: true,
         unique: true,
-        defaultValue: null,
+        defaultValue: "('rec_'::text || (xata_private.xid())::text)",
+        comment: '',
+      },
+      {
+        name: 'xata_updatedat',
+        type: 'datetime',
+        notNull: true,
+        unique: false,
+        defaultValue: 'now()',
+        comment: '',
+      },
+      {
+        name: 'xata_version',
+        type: 'int',
+        notNull: true,
+        unique: false,
+        defaultValue: '0',
+        comment: '',
+      },
+    ],
+  },
+  {
+    name: 'test_xata_cols',
+    checkConstraints: {
+      test_xata_cols_xata_id_length_xata_id: {
+        name: 'test_xata_cols_xata_id_length_xata_id',
+        columns: ['xata_id'],
+        definition: 'CHECK ((length(xata_id) < 256))',
+      },
+    },
+    foreignKeys: {},
+    primaryKey: [],
+    uniqueConstraints: {
+      _pgroll_new_test_xata_cols_xata_id_key: {
+        name: '_pgroll_new_test_xata_cols_xata_id_key',
+        columns: ['xata_id'],
+      },
+    },
+    columns: [
+      {
+        name: 'xata_createdat',
+        type: 'datetime',
+        notNull: true,
+        unique: false,
+        defaultValue: 'now()',
+        comment: '',
+      },
+      {
+        name: 'xata_id',
+        type: 'text',
+        notNull: true,
+        unique: true,
+        defaultValue: "('rec_'::text || (xata_private.xid())::text)",
+        comment: '',
+      },
+      {
+        name: 'xata_updatedat',
+        type: 'datetime',
+        notNull: true,
+        unique: false,
+        defaultValue: 'now()',
+        comment: '',
+      },
+      {
+        name: 'xata_version',
+        type: 'int',
+        notNull: true,
+        unique: false,
+        defaultValue: '0',
         comment: '',
       },
     ],
@@ -96,8 +191,12 @@ export type InferredTypes = SchemaInference<SchemaTables>;
 export type ClimbingTiles = InferredTypes['climbing_tiles'];
 export type ClimbingTilesRecord = ClimbingTiles & XataRecord;
 
+export type TestXataCols = InferredTypes['test_xata_cols'];
+export type TestXataColsRecord = TestXataCols & XataRecord;
+
 export type DatabaseSchema = {
   climbing_tiles: ClimbingTilesRecord;
+  test_xata_cols: TestXataColsRecord;
 };
 
 const DatabaseClient = buildClient();
