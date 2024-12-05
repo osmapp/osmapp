@@ -75,15 +75,9 @@ const sortKey = [
   -1,
   [
     '+',
-    ['coalesce', ['get', 'osmappRouteCount'], 0],
-    ['case', ['get', 'osmappHasImages'], 99999, 0], // preference for items with images
-    ['case', ['get', 'name'], 2, 0], // prefer items with name
-    // [
-    //   'case',
-    //   ['all', ['>', ['zoom'], 16], ['==', ['get', 'climbing'], 'crag']],
-    //   999,
-    //   0,
-    // ], // prefer areas on low zoom
+    ['to-number', ['get', 'osmappRouteCount']],
+    ['case', ['get', 'osmappHasImages'], 10000, 0], // preference for items with images
+    ['case', ['to-boolean', ['get', 'name']], 2, 0], // prefer items with name
   ],
 ] as DataDrivenPropertyValueSpecification<number>;
 
@@ -113,7 +107,6 @@ export const routes: LayerSpecification[] = [
     minzoom: 16,
     filter: ['all', ['==', 'type', 'route']],
   },
-
   {
     id: 'climbing-3-routes-circle',
     type: 'circle',
