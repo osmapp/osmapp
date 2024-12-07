@@ -1,25 +1,11 @@
-import { xata } from '../db/db';
 import { Client } from 'pg';
+import vtpbf from 'vt-pbf';
+import geojsonVt from 'geojson-vt';
+import * as tilebelt from '@mapbox/tilebelt';
 
-export const climbingTile = async () => {
-  const start = performance.now();
-  const alldata = await xata.db.climbing_tiles
-    .select(['geojson'])
-    .filter({
-      // type: '_otherWays',
-      // lat: { $gt: 48, $lt: 51 },
-      // lon: { $gt: 14, $lt: 19 },
-      type: 'group',
-      geohash: 'u2',
-    })
-    .getAll();
+export type TileNumber = [number, number, number];
 
-  console.log('climbingTileXata', performance.now() - start, alldata.length);
-
-  return alldata.map((record) => record.geojson);
-};
-
-export const climbingTilePg = async () => {
+const fetchFromDb = async ([z, x, y]: TileNumber) => {
   const start = performance.now();
 
   const client = new Client({
@@ -35,11 +21,27 @@ export const climbingTilePg = async () => {
 
   await client.connect();
 
-  const result = await client.query(
-    "SELECT geojson FROM climbing_tiles WHERE type='group' AND geohash = 'u2'",
-  );
+  const bbox = tilebelt.tileToBBOX([z, x, y]);
+
+  const query =
+    z < 12
+      ? `SELECT geojson FROM climbing_tiles WHERE type='group' AND lon >= ${bbox[0]} AND lon <= ${bbox[2]} AND lat >= ${bbox[1]} AND lat <= ${bbox[3]}`
+      : `SELECT geojson FROM climbing_tiles WHERE type IN ('group', 'route') AND lon >= ${bbox[0]} AND lon <= ${bbox[2]} AND lat >= ${bbox[1]} AND lat <= ${bbox[3]}`;
+  const result = await client.query(query);
+  const geojson = {
+    type: 'FeatureCollection',
+    features: result.rows.map((record) => record.geojson),
+  } as GeoJSON.FeatureCollection;
 
   console.log('climbingTilePg', performance.now() - start, result.rows.length);
 
-  return result.rows.map((record) => record.geojson);
+  return geojson;
+};
+
+export const climbingTile = async ([z, x, y]: TileNumber) => {
+  const orig = await fetchFromDb([z, x, y]);
+  const tileindex = geojsonVt(orig, {});
+  const tile = tileindex.getTile(z, x, y);
+
+  return vtpbf.fromGeojsonVt({ groups: tile });
 };
