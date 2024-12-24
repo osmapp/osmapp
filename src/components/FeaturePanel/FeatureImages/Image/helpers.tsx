@@ -38,13 +38,12 @@ export const UncertainCover = styled.div`
   box-shadow: inset 0 0 100px rgba(255, 255, 255, 0.3);
 `;
 
-export const useGetOnClick = (def: ImageDef) => {
-  const { feature } = useFeatureContext();
-
+export const handleClimbingDialogOnClick = (feature, def: ImageDef) => {
   if (isTag(def) && feature.tags.climbing === 'crag') {
     return () => {
       const featureLink = getOsmappLink(feature);
       const photoLink = removeFilePrefix(def.v);
+      console.log('___', `${featureLink}/climbing/photo/${photoLink}`);
       Router.push(`${featureLink}/climbing/photo/${photoLink}`);
     };
   }
