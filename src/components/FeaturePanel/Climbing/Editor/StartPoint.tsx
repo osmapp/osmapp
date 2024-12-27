@@ -48,8 +48,10 @@ export const StartPoint = ({
   osmId,
   onPointInSelectedRouteClick,
 }: Props) => {
-  const { isRouteSelected, getMachine } = useClimbingContext();
+  const { isRouteSelected, getMachine, isOtherRouteSelected } =
+    useClimbingContext();
   const isSelected = isRouteSelected(routeNumber);
+  const isOtherSelected = isOtherRouteSelected(routeNumber);
   const machine = getMachine();
   return (
     <>
@@ -63,6 +65,8 @@ export const StartPoint = ({
           index={0}
           routeNumber={routeNumber}
           type={undefined}
+          isRouteSelected={isSelected}
+          isOtherRouteSelected={isOtherSelected}
         />
       ) : (
         <NonEditablePoint isSelected={isSelected} x={x} y={y} />

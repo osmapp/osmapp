@@ -5,6 +5,7 @@ import { getPositionInImageFromMouse } from './mousePositionUtils';
 
 export type State =
   | 'editRoute'
+  | 'mockPoints'
   | 'extendRoute'
   | 'init'
   | 'pointMenu'
@@ -22,6 +23,7 @@ export type StateAction =
   | 'dragPoint'
   | 'editRoute'
   | 'extendRoute'
+  | 'mockPoints'
   | 'finishRoute'
   | 'routeSelect'
   | 'showPointMenu'
@@ -109,6 +111,8 @@ export const useGetMachineFactory = ({
   };
 
   const dragPoint = () => {};
+  const mockPoints = () => {};
+  const finishMockPoints = () => {};
 
   const changePointType = ({ type }) => {
     updatePathOnRouteIndex(routeSelectedIndex, (path) =>
@@ -162,6 +166,7 @@ export const useGetMachineFactory = ({
       ...commonActions,
       deleteRoute: { nextState: 'init', callback: deleteRoute },
       dragPoint: { nextState: 'editRoute', callback: dragPoint },
+      mockPoints: { nextState: 'mockPoints', callback: mockPoints },
       cancelRouteSelection: {
         nextState: 'init',
         callback: cancelRouteSelection,
@@ -174,6 +179,9 @@ export const useGetMachineFactory = ({
       finishRoute: { nextState: 'editRoute', callback: finishRoute },
       extendRoute: { nextState: 'extendRoute', callback: extendRoute },
       routeSelect: { nextState: 'routeSelected', callback: routeSelect },
+    },
+    mockPoints: {
+      editRoute: { nextState: 'editRoute', callback: finishMockPoints },
     },
     extendRoute: {
       ...commonActions,
