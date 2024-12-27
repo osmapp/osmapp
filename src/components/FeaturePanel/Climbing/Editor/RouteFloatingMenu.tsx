@@ -84,11 +84,16 @@ export const RouteFloatingMenu = () => {
 
   const onPointTypeChange = useCallback(
     (type: PointType) => {
-      machine.execute('changePointType', { type });
+      // @TODO tady upravit aby se tam posílalo routeSelectedIndex=undefined a pointSelectedIndex podle indexu v mockedPoints. Zároveň bude potřeba sem předat informaci který index měním. Možná v climbing contextu?
+      machine.execute('changePointType', {
+        type,
+        routeSelectedIndex,
+        pointSelectedIndex,
+      });
 
       setShowRouteMarksMenu(false);
     },
-    [machine],
+    [machine, routeSelectedIndex, pointSelectedIndex],
   );
 
   const onMouseEnter = () => {
