@@ -137,7 +137,7 @@ const getCountryCode = async (feature: Feature): Promise<string | null> => {
   return null;
 };
 
-const getRelationElementsAndCenter = async (apiId: OsmId) => {
+export const getRelationElementsAndCenter = async (apiId: OsmId) => {
   const element = await getOsmPromise(apiId);
   const getPositionOfFirstItem =
     isPublictransportRoute({ tags: element.tags }) ||
@@ -180,7 +180,7 @@ const getElementsAndCenter = async (apiId: OsmId) => {
   }
 };
 
-const fetchFeatureWithCenter = async (apiId: OsmId) => {
+export const fetchFeatureWithCenter = async (apiId: OsmId) => {
   const [{ element, center }] = await Promise.all([
     getElementsAndCenter(apiId),
     fetchSchemaTranslations(),

@@ -27,6 +27,7 @@ import { ClimbingStructuredData } from './Climbing/ClimbingStructuredData';
 import { isPublictransportRoute } from '../../utils';
 import { Sockets } from './Sockets/Sockets';
 import { ClimbingTypeBadge } from './Climbing/ClimbingTypeBadge';
+import { UploadDialog } from './UploadDialog/UploadDialog';
 
 const Flex = styled.div`
   flex: 1;
@@ -80,6 +81,12 @@ export const FeaturePanel = ({ headingRef }: FeaturePanelProps) => {
               </PanelSidePadding>
 
               <Box mb={2}>
+                {process.env.NEXT_PUBLIC_ENABLE_UPLOAD && (
+                  <PanelSidePadding>
+                    <UploadDialog />
+                  </PanelSidePadding>
+                )}
+
                 <FeatureImages />
               </Box>
 

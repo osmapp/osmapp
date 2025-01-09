@@ -16,7 +16,8 @@ export const getTypeLabel = ({ layer, osmMeta, properties, schema }: Feature) =>
 const getRefLabel = (feature: Feature) =>
   feature.tags.ref ? `${getTypeLabel(feature)} ${feature.tags.ref}` : '';
 
-const getName = ({ tags }: Feature) => tags[`name:${intl.lang}`] || tags.name;
+export const getName = ({ tags }: Feature) =>
+  tags[`name:${intl.lang}`] || tags.name;
 
 export const hasName = (feature: Feature) =>
   feature.point || getName(feature) || getBuiltAddress(feature); // we dont want to show "No name" for point
@@ -24,7 +25,7 @@ export const hasName = (feature: Feature) =>
 export const getHumanPoiType = (feature: Feature) =>
   hasName(feature) ? getTypeLabel(feature) : t('featurepanel.no_name');
 
-const getLabelWithoutFallback = (feature: Feature) => {
+export const getLabelWithoutFallback = (feature: Feature) => {
   const { point, roundedCenter } = feature;
   if (point) {
     return roundedToDeg(roundedCenter);
