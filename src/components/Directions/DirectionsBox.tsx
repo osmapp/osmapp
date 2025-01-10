@@ -8,7 +8,9 @@ import { DirectionsForm } from './DirectionsForm';
 import { result } from 'lodash';
 import { useDirectionsContext } from './DirectionsContext';
 
-const Wrapper = styled(Stack)<{ $isMobileMode: boolean }>`
+const Wrapper = styled(Stack, {
+  shouldForwardProp: (prop) => prop !== '$isMobileMode',
+})<{ $isMobileMode: boolean }>`
   position: absolute;
   top: 8px;
   left: 8px;
