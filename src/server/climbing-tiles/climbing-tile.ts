@@ -1,9 +1,27 @@
 import { Client } from 'pg';
 import vtpbf from 'vt-pbf';
 import geojsonVt from 'geojson-vt';
-import * as tilebelt from '@mapbox/tilebelt';
+import { BBox } from 'geojson';
 
-export type TileNumber = [number, number, number];
+const r2d = 180 / Math.PI;
+
+function tile2lon(x: number, z: number): number {
+  return (x / Math.pow(2, z)) * 360 - 180;
+}
+
+function tile2lat(y: number, z: number): number {
+  const n = Math.PI - (2 * Math.PI * y) / Math.pow(2, z);
+  return r2d * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+}
+export function tileToBBOX([z, x, y]: TileNumber): BBox {
+  const e = tile2lon(x + 1, z);
+  const w = tile2lon(x, z);
+  const s = tile2lat(y + 1, z);
+  const n = tile2lat(y, z);
+  return [w, s, e, n];
+}
+
+export type TileNumber = [number, number, number]; // z,x,y
 
 const fetchFromDb = async ([z, x, y]: TileNumber) => {
   const start = performance.now();
@@ -21,7 +39,7 @@ const fetchFromDb = async ([z, x, y]: TileNumber) => {
 
   await client.connect();
 
-  const bbox = tilebelt.tileToBBOX([z, x, y]);
+  const bbox = tileToBBOX([z, x, y]);
 
   const query =
     z < 12
@@ -38,7 +56,12 @@ const fetchFromDb = async ([z, x, y]: TileNumber) => {
   return geojson;
 };
 
-export const climbingTile = async ([z, x, y]: TileNumber) => {
+export const climbingTile = async ([z, x, y]: TileNumber, type: string) => {
+  if (type === 'json') {
+    const orig = await fetchFromDb([z, x, y]);
+    return JSON.stringify(orig);
+  }
+
   const orig = await fetchFromDb([z, x, y]);
   const tileindex = geojsonVt(orig, {});
   const tile = tileindex.getTile(z, x, y);
