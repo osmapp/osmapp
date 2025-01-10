@@ -6,6 +6,8 @@ import { useLoadImages } from './useLoadImages';
 import { NoImage } from './NoImage';
 import { HEIGHT, ImageSkeleton } from './helpers';
 import { naturalSort } from '../Climbing/utils/array';
+import { handleClimbingDialogOnClick } from './Image/helpers';
+import { useFeatureContext } from '../../utils/FeatureContext';
 
 export const Wrapper = styled.div`
   width: 100%;
@@ -32,6 +34,7 @@ export const Slider = ({ children }) => (
 
 export const FeatureImages = () => {
   const { loading, images } = useLoadImages();
+  const { feature } = useFeatureContext();
   if (images.length === 0) {
     return <Wrapper>{loading ? <ImageSkeleton /> : <NoImage />}</Wrapper>;
   }
@@ -40,7 +43,12 @@ export const FeatureImages = () => {
     <Wrapper>
       <Slider>
         {naturalSort(images, (item) => item.def.k).map((item) => (
-          <Image key={item.image.imageUrl} def={item.def} image={item.image} />
+          <Image
+            key={item.image.imageUrl}
+            def={item.def}
+            image={item.image}
+            onClick={handleClimbingDialogOnClick(feature, item.def)}
+          />
         ))}
       </Slider>
     </Wrapper>
