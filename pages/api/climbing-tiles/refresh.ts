@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { climbingTile } from '../../../src/server/climbing-tiles/climbing-tile';
-import { refresh } from '../../../src/server/climbing-tiles/refresh';
+import { refresh } from '../../../src/server/climbing-tiles/refresh.js';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
