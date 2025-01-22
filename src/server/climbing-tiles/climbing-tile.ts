@@ -28,8 +28,16 @@ const fetchFromDb = async ([z, x, y]: TileNumber) => {
 
   const client = await getClient();
 
-  const bbox = tileToBBOX([z, x, y]);
+  const tile = await client.query(
+    `SELECT tile_geojson FROM tiles_cache WHERE z = ${z} AND x = ${x} AND y = ${y}`,
+  );
 
+  if (tile.rowCount > 0) {
+    console.log('fetchFromDb HIT', performance.now() - start);
+    return tile.rows[0].tile_geojson;
+  }
+
+  const bbox = tileToBBOX([z, x, y]);
   const query =
     z < 10
       ? `SELECT geojson FROM climbing_tiles WHERE type='group' AND lon >= ${bbox[0]} AND lon <= ${bbox[2]} AND lat >= ${bbox[1]} AND lat <= ${bbox[3]}`
@@ -39,7 +47,15 @@ const fetchFromDb = async ([z, x, y]: TileNumber) => {
     type: 'FeatureCollection',
     features: result.rows.map((record) => record.geojson),
   } as GeoJSON.FeatureCollection;
-  console.log('fetchFromDb', performance.now() - start, result.rows.length);
+  console.log(
+    'fetchFromDb MISS',
+    performance.now() - start,
+    result.rows.length,
+  );
+
+  client.query(`INSERT INTO tiles_cache VALUES (${z}, ${x}, ${y}, $1)`, [
+    geojson,
+  ]);
 
   return geojson;
 };
