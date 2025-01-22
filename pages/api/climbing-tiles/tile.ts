@@ -10,7 +10,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       Number,
     ) as TileNumber;
 
-    const buffer = await climbingTile(tileNumber, req.query.type);
+    const buffer = await climbingTile(tileNumber, req.query.type as string);
     res
       .setHeader('Content-Type', 'application/x-protobuf')
       .status(200)

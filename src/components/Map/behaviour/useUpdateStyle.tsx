@@ -22,6 +22,7 @@ import { setUpHover } from './featureHover';
 import { layersWithOsmId } from '../helpers';
 import { Theme } from '../../../helpers/theme';
 import { addIndoorEqual, removeIndoorEqual } from './indoor';
+import { addClimbingTilesSource } from './climbingTilesSource';
 
 const ofrBasicStyle = {
   ...basicStyle,
@@ -72,7 +73,7 @@ const addClimbingOverlay = (style: StyleSpecification, map: Map) => {
       'source-layer': 'groups',
     })),
   ); // must be also in `layersWithOsmId` because of hover effect
-  // style.sprite = [...OSMAPP_SPRITE, CLIMBING_SPRITE];
+  style.sprite = [...OSMAPP_SPRITE, CLIMBING_SPRITE];
 
   // fetchCrags().then(
   //   (geojson) => {
@@ -96,7 +97,9 @@ const addOverlaysToStyle = (
     .forEach((key: string) => {
       switch (key) {
         case 'climbing':
-          addClimbingOverlay(style, map);
+          addClimbingTilesSource(style);
+
+          //addClimbingOverlay(style, map);
           break;
 
         case 'indoor':

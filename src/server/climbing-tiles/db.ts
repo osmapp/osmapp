@@ -6,8 +6,6 @@ if (!global.db) {
 
 export async function getClient() {
   if (!global.db.pool) {
-    console.log('No pool available, creating new pool.');
-
     const client = new Client({
       user: 'tvgiad',
       password: 'xau_E0h76BAWwiiGCOqEYZsRoCUQqXEQ3jpM',
