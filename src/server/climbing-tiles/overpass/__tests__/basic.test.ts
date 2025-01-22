@@ -1,4 +1,5 @@
-const elements: OsmItem[] = [
+const elements = [
+  // OsmElement[]
   // {
   //     "type": "node",
   //     "id": 313822575,

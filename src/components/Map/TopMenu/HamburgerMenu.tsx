@@ -204,12 +204,6 @@ export const HamburgerMenu = () => {
         <InstallLink closeMenu={close} />
         <AboutLink closeMenu={close} />
         <GithubLink closeMenu={close} />
-        {isOpenClimbing && (
-          <>
-            <ClimbingAreasLink closeMenu={close} />
-            <ClimbingGradesTableLink closeMenu={close} />
-          </>
-        )}
         <StyledDivider />
         <LangSwitcher />
       </Menu>

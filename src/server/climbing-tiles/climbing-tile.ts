@@ -21,7 +21,7 @@ export function tileToBBOX([z, x, y]: TileNumber): BBox {
   return [w, s, e, n];
 }
 
-export type TileNumber = [number, number, number]; // z,x,y
+export type TileNumber = [z: number, x: number, y: number];
 
 const fetchFromDb = async ([z, x, y]: TileNumber) => {
   const start = performance.now();
@@ -39,7 +39,7 @@ const fetchFromDb = async ([z, x, y]: TileNumber) => {
     type: 'FeatureCollection',
     features: result.rows.map((record) => record.geojson),
   } as GeoJSON.FeatureCollection;
-  console.log('climbingTilePg', performance.now() - start, result.rows.length);
+  console.log('fetchFromDb', performance.now() - start, result.rows.length);
 
   return geojson;
 };
@@ -54,7 +54,5 @@ export const climbingTile = async ([z, x, y]: TileNumber, type: string) => {
 
   const tileindex = geojsonVt(orig, { tolerance: 0 });
   const tile = tileindex.getTile(z, x, y);
-  console.log(tile);
-
   return tile ? vtpbf.fromGeojsonVt({ groups: tile }) : null;
 };
