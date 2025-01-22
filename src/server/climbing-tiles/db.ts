@@ -4,7 +4,7 @@ if (!global.db) {
   global.db = { pool: false };
 }
 
-export async function getClient() {
+export async function getClient(): Promise<Client> {
   if (!global.db.pool) {
     const client = new Client({
       user: 'tvgiad',
