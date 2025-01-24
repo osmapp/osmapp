@@ -1,4 +1,4 @@
-import { GeoJSONSource } from 'maplibre-gl';
+import { GeoJSONSource, LngLat } from 'maplibre-gl';
 import { fetchJson } from '../../../services/fetch';
 import { EMPTY_GEOJSON_SOURCE, OSMAPP_SPRITE } from '../consts';
 import { getGlobalMap } from '../../../services/mapStorage';
@@ -22,46 +22,33 @@ async function getTileData(z, x, y) {
   return features;
 }
 
+/*
+    -180          +180  = x = longitude
++90 +----------------+
+    |                |
+    |                |
+-90 +----------------+
+  = y = latitude
+* */
+
+const getTile = (z: number, { lng, lat }: LngLat) => {
+  const xNorm = (lng + 180) / 360;
+  const x = Math.floor(xNorm * Math.pow(2, z));
+  const yRad = (lat * Math.PI) / 180;
+  const correction = 1 / Math.cos(yRad); // on pole 90° = infinity
+  const yNorm = (1 - Math.log(Math.tan(yRad) + correction) / Math.PI) / 2; // defined on 0°-85°
+  const y = Math.floor(yNorm * Math.pow(2, z));
+  return { x, y, z };
+};
+
 async function updateGeoJSONSource() {
   const map = getGlobalMap();
   const mapZoom = map.getZoom();
-  const z = mapZoom < 12 ? 10 : 12;
+  const z = mapZoom >= 12 ? 12 : 4;
 
   const bounds = map.getBounds();
-  const nw = bounds.getNorthWest();
-  const se = bounds.getSouthEast();
-
-  const nwTile = {
-    x: Math.floor(((nw.lng + 180) / 360) * Math.pow(2, z)),
-    y: Math.floor(
-      ((1 -
-        Math.log(
-          Math.tan((nw.lat * Math.PI) / 180) +
-            1 / Math.cos((nw.lat * Math.PI) / 180),
-        ) /
-          Math.PI) /
-        2) *
-        Math.pow(2, z),
-    ),
-    z,
-  };
-
-  const seTile = {
-    x: Math.floor(((se.lng + 180) / 360) * Math.pow(2, z)),
-    y: Math.floor(
-      ((1 -
-        Math.log(
-          Math.tan((se.lat * Math.PI) / 180) +
-            1 / Math.cos((se.lat * Math.PI) / 180),
-        ) /
-          Math.PI) /
-        2) *
-        Math.pow(2, z),
-    ),
-    z,
-  };
-
-  console.log({ nwTile, seTile });
+  const nwTile = getTile(z, bounds.getNorthWest());
+  const seTile = getTile(z, bounds.getSouthEast());
 
   const tiles = [];
   for (let x = nwTile.x; x <= seTile.x; x++) {
