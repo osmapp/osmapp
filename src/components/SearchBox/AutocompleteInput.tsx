@@ -15,6 +15,7 @@ import { useGetOptions } from './useGetOptions';
 import { useInputValueState } from './options/geocoder';
 import { useRouter } from 'next/router';
 import { useUserSettingsContext } from '../utils/UserSettingsContext';
+import { OptionsPaper, OptionsPopper } from './optionsPopper';
 
 type SearchBoxInputProps = {
   params: any;
@@ -113,6 +114,7 @@ export const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
           autocompleteRef={autocompleteRef}
         />
       )}
+      slots={{ paper: OptionsPaper, popper: OptionsPopper }}
       renderOption={renderOptionFactory(
         inputValue,
         currentTheme,

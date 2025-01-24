@@ -42,6 +42,7 @@ declare module '@mui/material/styles' {
     hover?: string;
     searchBox?: string;
     searchInput?: string;
+    searchInputSolid?: string;
     searchInputPanel?: string;
   }
 
