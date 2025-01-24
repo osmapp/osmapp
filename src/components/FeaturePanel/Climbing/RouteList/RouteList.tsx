@@ -44,6 +44,7 @@ export const RouteList = ({ isEditable }: { isEditable?: boolean }) => {
     };
   }, [routeSelectedIndex, routes, routeIndexExpanded]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  console.log('___routes', routes);
   return (
     <Container>
       {routes.length !== 0 && <RouteListDndContent isEditable={isEditable} />}

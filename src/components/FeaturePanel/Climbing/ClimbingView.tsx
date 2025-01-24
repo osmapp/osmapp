@@ -384,6 +384,8 @@ export const ClimbingView = ({ photo }: { photo?: string }) => {
     Object.keys(resolutions).filter((key) => resolutions[key] === true).length >
       0;
 
+  console.log('___// loadedPhotos', loadedPhotos);
+
   const replacePhotoIfNeeded = (photos: string[], selectedIndex: number) => {
     if (!photos.includes(photoPath) && selectedIndex > -1 && !isPhotoLoading) {
       if (photos.length > 0) {

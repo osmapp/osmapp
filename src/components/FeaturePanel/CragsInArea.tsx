@@ -15,6 +15,7 @@ import { getInstantImage } from '../../services/images/getImageDefs';
 import { intl } from '../../services/intl';
 import Link from 'next/link';
 import { naturalSort } from './Climbing/utils/array';
+import { handleClimbingDialogOnClick } from './FeatureImages/Image/helpers';
 
 const ArrowIcon = styled(ArrowForwardIosIcon)`
   opacity: 0.2;
@@ -101,12 +102,17 @@ const Header = ({
   </HeadingRow>
 );
 
-const Gallery = ({ images }) => {
+const Gallery = ({ images, feature }) => {
   return (
     <Wrapper>
       <Slider>
         {naturalSort(images, (item) => item.def.k).map((item) => (
-          <Image key={item.image.imageUrl} def={item.def} image={item.image} />
+          <Image
+            key={item.image.imageUrl}
+            def={item.def}
+            image={item.image}
+            onClick={handleClimbingDialogOnClick(feature, item.def)}
+          />
         ))}
       </Slider>
     </Wrapper>
@@ -143,7 +149,7 @@ const CragItem = ({ feature }: { feature: Feature }) => {
           routesCount={feature.members?.length}
           imagesCount={images.length}
         />
-        {images.length ? <Gallery images={images} /> : null}
+        {images.length ? <Gallery feature={feature} images={images} /> : null}
       </Container>
     </StyledLink>
   );
