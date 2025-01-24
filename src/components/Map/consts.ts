@@ -50,6 +50,11 @@ export const OSMAPP_SOURCES: Record<string, SourceSpecification> = {
     type: 'vector' as const,
   },
   overpass: EMPTY_GEOJSON_SOURCE,
+  climbingTiles: {
+    type: 'vector' as const,
+    tiles: ['http://localhost:3000/api/climbing-tiles/tile?z={z}&x={x}&y={y}'],
+    maxzoom: 10,
+  },
 };
 
 export const BACKGROUND = [
