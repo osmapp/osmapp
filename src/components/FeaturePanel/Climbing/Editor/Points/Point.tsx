@@ -41,6 +41,17 @@ const usePointColor = (type, isHovered) => {
   };
 };
 
+type PointType = {
+  x: number;
+  y: number;
+  onPointInSelectedRouteClick: (e: any) => void;
+  type: any;
+  index: number;
+  routeNumber?: number;
+  isRouteSelected: boolean;
+  isOtherRouteSelected: boolean;
+};
+
 export const Point = ({
   x,
   y,
@@ -48,7 +59,9 @@ export const Point = ({
   type,
   index,
   routeNumber,
-}) => {
+  isRouteSelected,
+  isOtherRouteSelected,
+}: PointType) => {
   const [isHovered, setIsHovered] = useState(false);
   const {
     setPointSelectedIndex,
@@ -61,17 +74,13 @@ export const Point = ({
     photoZoom,
     getCurrentPath,
     setIsPanningDisabled,
-    isRouteSelected,
     isPointSelected,
-    isOtherRouteSelected,
     isEditMode,
   } = useClimbingContext();
   const isMobileMode = useMobileMode();
-  const isSelected = isRouteSelected(routeNumber);
-  const isOtherSelected = isOtherRouteSelected(routeNumber);
   const { pointColor, pointStroke } = usePointColor(type, isHovered);
 
-  const isPointOnRouteSelected = isSelected && isPointSelected(index);
+  const isPointOnRouteSelected = isRouteSelected && isPointSelected(index);
 
   const onPointClick = (e) => {
     e.stopPropagation();
@@ -80,7 +89,7 @@ export const Point = ({
   const onPointMouseEnter = () => {
     setIsHovered(true);
     const isLastPoint = getCurrentPath().length - 1 === index;
-    if (!isLastPoint) {
+    if (!isLastPoint && routeNumber) {
       setRouteIndexHovered(routeNumber);
     }
   };
@@ -130,13 +139,13 @@ export const Point = ({
   };
   const title = type && <title>{type}</title>;
 
-  if (isOtherSelected && isEditMode)
+  if (isOtherRouteSelected && isEditMode)
     return (
       <g transform={`translate(${x},${y}) scale(${1 / photoZoom.scale})`}>
         <circle cx={0} cy={0} r={2.5 * photoZoom.scale} fill="white" />
       </g>
     );
-  if (!isSelected || !isEditMode) return null;
+  if (!isRouteSelected || !isEditMode) return null;
 
   return (
     <g transform={`translate(${x},${y}) scale(${1 / photoZoom.scale})`}>

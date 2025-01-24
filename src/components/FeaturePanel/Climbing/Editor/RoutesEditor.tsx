@@ -81,6 +81,11 @@ export const RoutesEditor = ({
       });
       return;
     }
+    if (machine.currentStateName === 'mockPoints') {
+      machine.execute('addMockedPoint', {
+        position: { x: e.clientX, y: e.clientY },
+      });
+    }
 
     if (machine.currentStateName === 'pointMenu') {
       machine.execute('cancelPointMenu');
