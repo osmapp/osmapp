@@ -13,6 +13,7 @@ const SOURCE_NAME = 'climbing-tiles';
 async function fetchGeoJSONData(z, x, y) {
   const data = await fetchJson(
     `/api/climbing-tiles/tile?z=${z}&x=${x}&y=${y}&type=json`,
+    { nocache: true },
   );
   return data.features || [];
 }
@@ -60,10 +61,12 @@ async function updateGeoJSONSource() {
   console.log({ tiles });
 
   const features = [];
-  for (const tile of tiles) {
-    const tileFeatures = await getTileData(tile.z, tile.x, tile.y);
-    features.push(...tileFeatures);
-  }
+  const tileFeatures = await getTileData(7, 69, 43);
+  features.push(...tileFeatures);
+  // for (const tile of tiles) {
+  //   const tileFeatures = await getTileData(tile.z, tile.x, tile.y);
+  //   features.push(...tileFeatures);
+  // }
 
   console.log({ features });
 
