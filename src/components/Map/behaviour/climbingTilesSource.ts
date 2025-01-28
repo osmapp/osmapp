@@ -10,7 +10,10 @@ import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
 
 const SOURCE_NAME = 'climbing-tiles';
 
-async function fetchGeoJSONData(z, x, y) {
+const tilesCache = {};
+const getCacheKey = (z, x, y) => `${z}/${x}/${y}`;
+
+async function fetchTile(z, x, y) {
   const data = await fetchJson(
     `/api/climbing-tiles/tile?z=${z}&x=${x}&y=${y}&type=json`,
     { nocache: true },
@@ -18,9 +21,15 @@ async function fetchGeoJSONData(z, x, y) {
   return data.features || [];
 }
 
-async function getTileData(z, x, y) {
-  const features = await fetchGeoJSONData(z, x, y);
-  return features;
+async function getTileJson(z, x, y) {
+  const key = getCacheKey(z, x, y);
+  if (tilesCache[key]) {
+    return tilesCache[key];
+  }
+
+  const tile = await fetchTile(z, x, y);
+  tilesCache[key] = tile;
+  return tile;
 }
 
 /*
@@ -45,28 +54,28 @@ const getTile = (z: number, { lng, lat }: LngLat) => {
 async function updateGeoJSONSource() {
   const map = getGlobalMap();
   const mapZoom = map.getZoom();
-  const z = mapZoom >= 12 ? 12 : 4;
+  const z = mapZoom >= 12 ? 12 : Math.floor(mapZoom);
 
   const bounds = map.getBounds();
   const nwTile = getTile(z, bounds.getNorthWest());
   const seTile = getTile(z, bounds.getSouthEast());
 
   const tiles = [];
+  // tiles.push({ z, x: nwTile.x, y: nwTile.y });
   for (let x = nwTile.x; x <= seTile.x; x++) {
     for (let y = nwTile.y; y <= seTile.y; y++) {
       tiles.push({ z, x, y });
     }
   }
-
   console.log({ tiles });
 
   const features = [];
-  const tileFeatures = await getTileData(7, 69, 43);
-  features.push(...tileFeatures);
-  // for (const tile of tiles) {
-  //   const tileFeatures = await getTileData(tile.z, tile.x, tile.y);
-  //   features.push(...tileFeatures);
-  // }
+  // const tileFeatures = await getTileData(7, 69, 43);
+  // features.push(...tileFeatures);
+  for (const tile of tiles) {
+    const tileFeatures = await getTileJson(tile.z, tile.x, tile.y);
+    features.push(...tileFeatures);
+  }
 
   console.log({ features });
 
@@ -75,6 +84,8 @@ async function updateGeoJSONSource() {
     features,
   });
 }
+
+let added = false;
 
 export const addClimbingTilesSource = (style: StyleSpecification) => {
   style.sources[SOURCE_NAME] = EMPTY_GEOJSON_SOURCE;
@@ -86,8 +97,10 @@ export const addClimbingTilesSource = (style: StyleSpecification) => {
     })),
   ); // must be also in `layersWithOsmId` because of hover effect
 
-  const map = getGlobalMap();
-  map.on('moveend', () => {
-    updateGeoJSONSource();
-  });
+  if (!added) {
+    const map = getGlobalMap();
+    map.on('load', updateGeoJSONSource);
+    map.on('moveend', updateGeoJSONSource);
+    added = true;
+  }
 };
