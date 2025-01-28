@@ -22,6 +22,7 @@ import { setUpHover } from './featureHover';
 import { layersWithOsmId } from '../helpers';
 import { Theme } from '../../../helpers/theme';
 import { addIndoorEqual, removeIndoorEqual } from './indoor';
+import { addClimbingTilesSource } from './climbingTilesSource';
 
 const ofrBasicStyle = {
   ...basicStyle,
@@ -64,19 +65,25 @@ const addRasterOverlay = (
 };
 
 const addClimbingOverlay = (style: StyleSpecification, map: Map) => {
-  style.sources.climbing = EMPTY_GEOJSON_SOURCE;
-  style.layers.push(...climbingLayers); // must be also in `layersWithOsmId` because of hover effect
+  // style.sources.climbing = EMPTY_GEOJSON_SOURCE;
+  style.layers.push(
+    ...climbingLayers.map((x) => ({
+      ...x,
+      source: 'climbingTiles',
+      'source-layer': 'groups',
+    })),
+  ); // must be also in `layersWithOsmId` because of hover effect
   style.sprite = [...OSMAPP_SPRITE, CLIMBING_SPRITE];
 
-  fetchCrags().then(
-    (geojson) => {
-      const geojsonSource = map.getSource('climbing') as GeoJSONSource;
-      geojsonSource?.setData(geojson); // TODO can be undefined at first map render
-    },
-    (error) => {
-      console.warn('Climbing Layer failed to fetch.', error); // eslint-disable-line no-console
-    },
-  );
+  // fetchCrags().then(
+  //   (geojson) => {
+  //     const geojsonSource = map.getSource('climbing') as GeoJSONSource;
+  //     geojsonSource?.setData(geojson); // TODO can be undefined at first map render
+  //   },
+  //   (error) => {
+  //     console.warn('Climbing Layer failed to fetch.', error); // eslint-disable-line no-console
+  //   },
+  // );
 };
 
 const addOverlaysToStyle = (
@@ -90,7 +97,9 @@ const addOverlaysToStyle = (
     .forEach((key: string) => {
       switch (key) {
         case 'climbing':
-          addClimbingOverlay(style, map);
+          addClimbingTilesSource(style);
+
+          //addClimbingOverlay(style, map);
           break;
 
         case 'indoor':
