@@ -15,7 +15,7 @@ const getCacheKey = (z, x, y) => `${z}/${x}/${y}`;
 
 async function fetchTile(z, x, y) {
   const data = await fetchJson(
-    `/api/climbing-tiles/tile?z=${z}&x=${x}&y=${y}&type=json`,
+    `/api/climbing-tiles/tile?z=${z}&x=${x}&y=${y}`,
     { nocache: true },
   );
   return data.features || [];

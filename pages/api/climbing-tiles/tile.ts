@@ -10,11 +10,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       Number,
     ) as TileNumber;
 
-    const buffer = await climbingTile(tileNumber, req.query.type as string);
-    res
-      .setHeader('Content-Type', 'application/x-protobuf')
-      .status(200)
-      .end(buffer);
+    const buffer = await climbingTile(tileNumber);
+    res.setHeader('Content-Type', 'application/json').status(200).send(buffer);
   } catch (err) {
     console.error(err); // eslint-disable-line no-console
     res.status(err.code ?? 400).send(String(err));

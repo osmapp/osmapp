@@ -42,6 +42,7 @@ const optimizeGeojson = (geojson: FeatureCollection, bbox: BBox) => {
       const current = grid[xIndex][yIndex];
       if (
         !current ||
+        !current.properties.osmappRouteCount ||
         feature.properties.osmappRouteCount >
           current.properties.osmappRouteCount
       ) {
@@ -60,6 +61,9 @@ const optimizeGeojson = (geojson: FeatureCollection, bbox: BBox) => {
 };
 
 const fetchFromDb = async ([z, x, y]: TileNumber) => {
+  if (z > 12) throw new Error('Zoom 12 is maximum (with all details)');
+  const isDetails = z == 12;
+
   const start = performance.now();
 
   const client = await getClient();
@@ -74,10 +78,9 @@ const fetchFromDb = async ([z, x, y]: TileNumber) => {
 
   const bbox = tileToBBOX([z, x, y]);
   const bboxCondition = `lon >= ${bbox[0]} AND lon <= ${bbox[2]} AND lat >= ${bbox[1]} AND lat <= ${bbox[3]}`;
-  const query =
-    z < 10
-      ? `SELECT geojson FROM climbing_tiles WHERE type = 'group' AND ${bboxCondition}`
-      : `SELECT geojson FROM climbing_tiles WHERE type IN ('group', 'route') AND ${bboxCondition}`;
+  const query = isDetails
+    ? `SELECT geojson FROM climbing_tiles WHERE type IN ('group', 'route') AND ${bboxCondition}`
+    : `SELECT geojson FROM climbing_tiles WHERE type = 'group' AND ${bboxCondition}`;
   const result = await client.query(query);
   const geojson = {
     type: 'FeatureCollection',
@@ -90,25 +93,16 @@ const fetchFromDb = async ([z, x, y]: TileNumber) => {
     result.rows.length,
   );
 
-  const optimizedGeojson = optimizeGeojson(geojson, bbox);
+  const optimizedGeojson = isDetails ? geojson : optimizeGeojson(geojson, bbox);
 
   client.query(
     `INSERT INTO tiles_cache VALUES (${z}, ${x}, ${y}, $1) ON CONFLICT (z, x, y) DO NOTHING`,
     [optimizedGeojson],
   );
 
-  return optimizedGeojson;
+  return JSON.stringify(optimizedGeojson);
 };
 
-export const climbingTile = async ([z, x, y]: TileNumber, type: string) => {
-  if (type === 'json') {
-    const orig = await fetchFromDb([z, x, y]);
-    return JSON.stringify(orig);
-  }
-
-  const orig = await fetchFromDb([z, x, y]);
-
-  const tileindex = geojsonVt(orig, { tolerance: 0 });
-  const tile = tileindex.getTile(z, x, y);
-  return tile ? vtpbf.fromGeojsonVt({ groups: tile }) : null;
+export const climbingTile = async ([z, x, y]: TileNumber) => {
+  return await fetchFromDb([z, x, y]);
 };
