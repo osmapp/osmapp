@@ -4,7 +4,9 @@ import { css } from '@emotion/react';
 import { isDesktop } from '../helpers';
 import { Paper } from '@mui/material';
 
-export const TopPanel = styled.div<{ $isMobileMode: boolean }>`
+export const TopPanel = styled('div', {
+  shouldForwardProp: (prop) => prop !== '$withShadow',
+})<{ $isMobileMode: boolean }>`
   position: absolute;
   min-height: ${SEARCH_BOX_HEIGHT}px;
   ${({ $isMobileMode, theme }) =>
