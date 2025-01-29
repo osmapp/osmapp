@@ -54,7 +54,7 @@ const getTile = (z: number, { lng, lat }: LngLat) => {
 async function updateGeoJSONSource() {
   const map = getGlobalMap();
   const mapZoom = map.getZoom();
-  const z = mapZoom >= 12 ? 12 : Math.floor(mapZoom);
+  const z = mapZoom >= 12 ? 12 : mapZoom >= 9 ? 9 : mapZoom >= 6 ? 6 : 0; //Math.floor(mapZoom);
 
   const bounds = map.getBounds();
   const nwTile = getTile(z, bounds.getNorthWest());
@@ -64,10 +64,14 @@ async function updateGeoJSONSource() {
   // tiles.push({ z, x: nwTile.x, y: nwTile.y });
   for (let x = nwTile.x; x <= seTile.x; x++) {
     for (let y = nwTile.y; y <= seTile.y; y++) {
-      tiles.push({ z, x, y });
+      if (x >= 0 && y >= 0) {
+        tiles.push({ z, x, y });
+      }
     }
   }
-  console.log({ tiles });
+  console.log(
+    `tiles: ${tiles.map(({ z, x, y }) => getCacheKey(z, x, y)).join(', ')}`,
+  );
 
   const features = [];
   // const tileFeatures = await getTileData(7, 69, 43);

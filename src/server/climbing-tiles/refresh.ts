@@ -212,7 +212,9 @@ export const refresh = async (log: (line: string) => void) => {
   const columns = Object.keys(records[0]);
   const values = records.map((record) => Object.values(record));
   const query = format(
-    `DELETE FROM climbing_tiles;INSERT INTO climbing_tiles(%I) VALUES %L`,
+    `TRUNCATE TABLE climbing_tiles;
+      INSERT INTO climbing_tiles(%I) VALUES %L;
+      TRUNCATE TABLE tiles_cache;`,
     columns,
     values,
   );

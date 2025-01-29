@@ -1,5 +1,3 @@
-import vtpbf from 'vt-pbf';
-import geojsonVt from 'geojson-vt';
 import { BBox, FeatureCollection } from 'geojson';
 import { getClient } from './db';
 
@@ -23,12 +21,14 @@ export function tileToBBOX([z, x, y]: TileNumber): BBox {
 
 export type TileNumber = [z: number, x: number, y: number];
 
-const optimizeGeojson = (geojson: FeatureCollection, bbox: BBox) => {
-  const intervalX = (bbox[2] - bbox[0]) / 10;
-  const intervalY = (bbox[3] - bbox[1]) / 10;
+const COUNT = 500;
 
-  const grid = Array.from({ length: 10 }, () =>
-    Array.from({ length: 10 }, () => null as GeoJSON.Feature | null),
+const optimizeGeojson = (geojson: FeatureCollection, bbox: BBox) => {
+  const intervalX = (bbox[2] - bbox[0]) / COUNT;
+  const intervalY = (bbox[3] - bbox[1]) / COUNT;
+
+  const grid = Array.from({ length: COUNT }, () =>
+    Array.from({ length: COUNT }, () => null as GeoJSON.Feature | null),
   );
 
   for (const feature of geojson.features) {
@@ -68,13 +68,16 @@ const fetchFromDb = async ([z, x, y]: TileNumber) => {
 
   const client = await getClient();
 
-  // const tile = await client.query(
-  //   `SELECT tile_geojson FROM tiles_cache WHERE z = ${z} AND x = ${x} AND y = ${y}`,
-  // );
-  // if (tile.rowCount > 0) {
-  //   console.log('fetchFromDb HIT', performance.now() - start);
-  //   return tile.rows[0].tile_geojson;
-  // }
+  const tile = await client.query(
+    `SELECT tile_geojson FROM tiles_cache WHERE z = ${z} AND x = ${x} AND y = ${y}`,
+  );
+  if (tile.rowCount > 0) {
+    console.log(
+      'tiles_cache HIT',
+      Math.round(performance.now() - start) + 'ms',
+    );
+    return tile.rows[0].tile_geojson;
+  }
 
   const bbox = tileToBBOX([z, x, y]);
   const bboxCondition = `lon >= ${bbox[0]} AND lon <= ${bbox[2]} AND lat >= ${bbox[1]} AND lat <= ${bbox[3]}`;
@@ -88,12 +91,12 @@ const fetchFromDb = async ([z, x, y]: TileNumber) => {
   } as GeoJSON.FeatureCollection;
 
   console.log(
-    'fetchFromDb MISS',
-    performance.now() - start,
+    'tiles_cache MISS',
+    Math.round(performance.now() - start) + 'ms',
     result.rows.length,
   );
 
-  const optimizedGeojson = isDetails ? geojson : optimizeGeojson(geojson, bbox);
+  const optimizedGeojson = z >= 9 ? geojson : optimizeGeojson(geojson, bbox);
 
   client.query(
     `INSERT INTO tiles_cache VALUES (${z}, ${x}, ${y}, $1) ON CONFLICT (z, x, y) DO NOTHING`,

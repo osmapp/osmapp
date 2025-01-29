@@ -89,6 +89,14 @@ const numberToSuperScript = (number?: number) =>
 const getLabel = (tags: FeatureTags, osmappRouteCount: number) =>
   join(tags?.name, '\n', numberToSuperScript(osmappRouteCount));
 
+const getRouteNumberFromTags = (element: OsmItem) => {
+  // TODO sum all types
+  const number = parseFloat(element.tags['climbing:sport'] ?? '0');
+
+  // can be eg. "yes" .. eg. relation/15056469
+  return Number.isNaN(number) ? 1 : number;
+};
+
 const convert = <T extends OsmItem, TGeometry extends FeatureGeometry>(
   element: T,
   geometryFn: (element: T) => TGeometry,
@@ -102,7 +110,7 @@ const convert = <T extends OsmItem, TGeometry extends FeatureGeometry>(
           element.type === 'relation'
             ? element.members.filter((member) => member.role === '').length
             : 0,
-          parseFloat(element.tags['climbing:sport'] ?? '0'), // TODO sum all types
+          getRouteNumberFromTags(element),
         )
       : undefined;
   const properties = {
