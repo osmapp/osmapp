@@ -3,15 +3,12 @@ import {
   OsmResponse,
   overpassToGeojsons,
 } from './overpass/overpassToGeojsons';
-import { EditableData } from '@xata.io/client';
-import { ClimbingTilesRecord } from '../db/xata-generated';
 import { encodeUrl } from '../../helpers/utils';
 import { fetchJson } from '../../services/fetch';
 import { LineString, LonLat, Point } from '../../services/types';
-import * as fs from 'node:fs';
 import { Client } from 'pg';
 import format from 'pg-format';
-import { encodeBase32, decodeBase32 } from 'geohashing';
+// import { encodeBase32, decodeBase32 } from 'geohashing';
 
 const centerGeometry = (feature: GeojsonFeature): GeojsonFeature<Point> => ({
   ...feature,
@@ -63,7 +60,7 @@ const fetchFromOverpass = async () => {
   return data;
 };
 
-type Records = Partial<EditableData<ClimbingTilesRecord>>[];
+type Records = any; //Partial<EditableData<ClimbingTilesRecord>>[];
 
 const recordsFactory = () => {
   const records: Records = [];
@@ -82,7 +79,7 @@ const recordsFactory = () => {
       count: feature.properties.osmappRouteCount || 0,
       lon,
       lat,
-      geohash: encodeBase32(lat, lon, 2),
+      // geohash: encodeBase32(lat, lon, 2),
       geojson: prepareGeojson(type, feature),
     });
   };

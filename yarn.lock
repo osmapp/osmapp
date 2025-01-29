@@ -1001,11 +1001,6 @@
   resolved "https://registry.yarnpkg.com/@mapbox/point-geometry/-/point-geometry-0.1.0.tgz#8a83f9335c7860effa2eeeca254332aa0aeed8f2"
   integrity sha1-ioP5M1x4YO/6Lu7KJUMyqgru2PI=
 
-"@mapbox/tilebelt@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@mapbox/tilebelt/-/tilebelt-2.0.2.tgz#8176d82a05541acee8104fe1d280981ebd8d4b7a"
-  integrity sha512-pzFgrmsCUjOAAeYns1MKJ1dJICYdEC+sYwtWLdxO7iJwmDlepGrEXDqP9ejApO/YUVctA/SYKDS4Oc0mBNNLZw==
-
 "@mapbox/tiny-sdf@^2.0.6":
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/@mapbox/tiny-sdf/-/tiny-sdf-2.0.6.tgz#9a1d33e5018093e88f6a4df2343e886056287282"
@@ -2280,11 +2275,6 @@
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
-
-"@xata.io/client@^0.0.0-next.va121e4207b94bfe0a3c025fc00b247b923880930":
-  version "0.0.0-next.va121e4207b94bfe0a3c025fc00b247b923880930"
-  resolved "https://registry.yarnpkg.com/@xata.io/client/-/client-0.0.0-next.va121e4207b94bfe0a3c025fc00b247b923880930.tgz#c3feb0f27a11c1418540fe4c0f219ecf6804e77d"
-  integrity sha512-tRhsrV6vSJk4r+Cn7WkE1hyV2WfnHOoMzpQeLujqrbemPtVj82R1uhqHM2fPFuUKMfD+19PVF+Gist0ePlX5SQ==
 
 "@xmldom/xmldom@^0.9.3":
   version "0.9.3"
@@ -4144,11 +4134,6 @@ gensync@^1.0.0-beta.2:
   version "1.0.0-beta.2"
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.2.tgz#32a6ee76c3d7f52d46b2b1ae5d93fea8580a25e0"
   integrity sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==
-
-geohashing@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/geohashing/-/geohashing-2.0.1.tgz#c081070a2b6ca551930f75ce8586afe0dd179944"
-  integrity sha512-u0H29yhqHEyBBgwv1GJrvqbD33AnQm2lbWOLNbXLZEWVrCKNoblyiWWnVGeYGaM4NNM7rBBTqvJZhZ/CDfrBVw==
 
 geojson-vt@^4.0.2:
   version "4.0.2"
