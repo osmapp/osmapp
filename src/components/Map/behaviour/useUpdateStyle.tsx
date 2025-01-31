@@ -126,6 +126,7 @@ export const useUpdateStyle = createMapEffectHook(
 
     const style = cloneDeep(getBaseStyle(key, currentTheme));
     addOverlaysToStyle(map, style, overlays, currentTheme);
+    style.projection = { type: 'globe' };
     map.setStyle(style, { diff: mapLoaded });
 
     const languageControl = new OpenMapTilesLanguage({
