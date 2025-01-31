@@ -1,24 +1,26 @@
 import { isBrowser } from '../components/helpers';
+import { prod } from './helpers';
 
 const cache = {};
 
-const fetchCache = isBrowser()
-  ? {
-      get: (key: string) => sessionStorage.getItem(key),
-      remove: (key: string) => sessionStorage.removeItem(key),
-      put: (key: string, value: string) => sessionStorage.setItem(key, value),
-      clear: () => sessionStorage.clear(), // this is little dirty, but we use sessionStorage only for this
-    }
-  : {
-      get: (key: string) => cache[key],
-      remove: (key: string) => delete cache[key],
-      put: (key: string, value: string) => {
-        cache[key] = value;
-      },
-      clear: () => {
-        Object.keys(cache).forEach((key) => delete cache[key]);
-      },
-    };
+const fetchCache =
+  !prod && isBrowser() // lets leave the sessionStorage cache only for DEV mode
+    ? {
+        get: (key: string) => sessionStorage.getItem(key),
+        remove: (key: string) => sessionStorage.removeItem(key),
+        put: (key: string, value: string) => sessionStorage.setItem(key, value),
+        clear: () => sessionStorage.clear(), // this is little dirty, but we use sessionStorage only for this
+      }
+    : {
+        get: (key: string) => cache[key],
+        remove: (key: string) => delete cache[key],
+        put: (key: string, value: string) => {
+          cache[key] = value;
+        },
+        clear: () => {
+          Object.keys(cache).forEach((key) => delete cache[key]);
+        },
+      };
 
 export const getKey = (url: string, opts: Record<string, any>) => {
   if (['POST', 'PUT', 'DELETE'].includes(opts.method)) {

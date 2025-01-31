@@ -22,7 +22,7 @@ import { setUpHover } from './featureHover';
 import { layersWithOsmId } from '../helpers';
 import { Theme } from '../../../helpers/theme';
 import { addIndoorEqual, removeIndoorEqual } from './indoor';
-import { addClimbingTilesSource } from './climbingTilesSource';
+import { addClimbingTilesSource } from './climbingTiles/climbingTilesSource';
 
 const ofrBasicStyle = {
   ...basicStyle,
