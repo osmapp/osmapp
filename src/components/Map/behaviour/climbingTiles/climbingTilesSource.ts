@@ -34,7 +34,7 @@ const updateData = async () => {
     features.push(...tileFeatures);
   }
 
-  map.getSource<GeoJSONSource>(SOURCE_NAME).setData({
+  map?.getSource<GeoJSONSource>(SOURCE_NAME)?.setData({
     type: 'FeatureCollection' as const,
     features,
   });
