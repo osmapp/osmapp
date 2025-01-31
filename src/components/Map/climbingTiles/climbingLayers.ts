@@ -4,7 +4,9 @@ import {
   SymbolLayerSpecification,
 } from '@maplibre/maplibre-gl-style-spec';
 import type { DataDrivenPropertyValueSpecification } from 'maplibre-gl';
-import { AREA, CRAG } from '../../MapFooter/ClimbingLegend';
+import { AREA, CRAG } from '../MapFooter/ClimbingLegend';
+
+export const CLIMBING_TILES_SOURCE = 'climbing-tiles';
 
 export const CLIMBING_SPRITE = {
   id: 'climbing',
@@ -37,7 +39,7 @@ const linearByRouteCount = (
 ): ExpressionSpecification => [
   'interpolate',
   ['linear'],
-  ['get', 'osmappRouteCount'],
+  ['coalesce', ['get', 'osmappRouteCount'], 0],
   from,
   a,
   to,
@@ -75,8 +77,9 @@ const sortKey = [
   -1,
   [
     '+',
-    ['get', 'osmappRouteCount'],
-    ['case', ['get', 'osmappHasImages'], 99999, 0], // preference for items with images
+    ['to-number', ['get', 'osmappRouteCount']],
+    ['case', ['get', 'osmappHasImages'], 10000, 0], // preference for items with images
+    ['case', ['to-boolean', ['get', 'name']], 2, 0], // prefer items with name
   ],
 ] as DataDrivenPropertyValueSpecification<number>;
 
@@ -100,15 +103,21 @@ const step = (
 
 export const routes: LayerSpecification[] = [
   {
-    id: 'climbing-3-routes-circle',
-    type: 'circle',
-    source: 'climbing',
+    id: 'climbing-routes-line',
+    type: 'line',
+    source: CLIMBING_TILES_SOURCE,
     minzoom: 16,
-    filter: [
-      'all',
-      ['==', 'osmappType', 'node'],
-      ['==', 'climbing', 'route_bottom'],
-    ],
+    filter: ['all', ['==', 'type', 'route']],
+    paint: {
+      'line-width': 2,
+    },
+  },
+  {
+    id: 'climbing-routes-circle',
+    type: 'circle',
+    source: CLIMBING_TILES_SOURCE,
+    minzoom: 16,
+    filter: ['all', ['==', 'type', 'route']],
     paint: {
       'circle-color': [
         'case',
@@ -121,15 +130,11 @@ export const routes: LayerSpecification[] = [
     },
   } as LayerSpecification,
   {
-    id: 'climbing-3-routes-labels',
+    id: 'climbing-routes-labels',
     type: 'symbol',
-    source: 'climbing',
+    source: CLIMBING_TILES_SOURCE,
     minzoom: 19,
-    filter: [
-      'all',
-      ['==', 'osmappType', 'node'],
-      ['==', 'climbing', 'route_bottom'],
-    ],
+    filter: ['all', ['==', 'type', 'route']],
     layout: {
       'text-padding': 2,
       'text-font': ['Noto Sans Medium'],
@@ -153,8 +158,8 @@ export const routes: LayerSpecification[] = [
 const COMMON_LAYOUT: SymbolLayerSpecification['layout'] = {
   'icon-optional': false,
   'icon-ignore-placement': false,
-  'icon-allow-overlap': false,
-  'text-field': '{osmappLabel}',
+  'icon-allow-overlap': ['step', ['zoom'], true, 4, false],
+  'text-field': ['step', ['zoom'], '', 4, ['get', 'osmappLabel']],
   'text-padding': 2,
   'text-font': ['Noto Sans Bold'],
   'text-anchor': 'top',
@@ -175,15 +180,11 @@ const cragSize = linearByRouteCount(0, 0.4, 50, 0.7);
 const cragSizeBig = 1;
 
 const mixed: LayerSpecification = {
-  id: 'climbing-1-mixed',
+  id: 'climbing-crags-and-areas',
   type: 'symbol',
-  source: 'climbing',
+  source: CLIMBING_TILES_SOURCE,
   maxzoom: 20,
-  filter: [
-    'all',
-    ['==', 'osmappType', 'relationPoint'],
-    ['in', 'climbing', 'area', 'crag'],
-  ],
+  filter: ['all', ['==', 'type', 'group']],
   layout: {
     'icon-image': ifCrag(
       byHasImages(CRAG, 'IMAGE'),

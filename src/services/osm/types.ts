@@ -12,6 +12,7 @@ export type OsmElement<T extends OsmType = 'node' | 'way' | 'relation'> = {
   uid: number;
   tags: Record<string, string>;
   members?: RelationMember[];
+  nodes?: number[];
 };
 
 export type OsmResponse<T extends OsmType = 'node' | 'way' | 'relation'> = {

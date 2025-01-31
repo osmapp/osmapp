@@ -13,7 +13,7 @@ import { makinaAfricaStyle } from '../styles/makinaAfricaStyle';
 import {
   CLIMBING_SPRITE,
   climbingLayers,
-} from '../styles/layers/climbingLayers';
+} from '../climbingTiles/climbingLayers';
 import { EMPTY_GEOJSON_SOURCE, OSMAPP_SPRITE } from '../consts';
 import { fetchCrags } from '../../../services/fetchCrags';
 import { intl } from '../../../services/intl';
@@ -22,6 +22,7 @@ import { setUpHover } from './featureHover';
 import { layersWithOsmId } from '../helpers';
 import { Theme } from '../../../helpers/theme';
 import { addIndoorEqual, removeIndoorEqual } from './indoor';
+import { addClimbingTilesSource } from '../climbingTiles/climbingTilesSource';
 
 const ofrBasicStyle = {
   ...basicStyle,
@@ -63,22 +64,6 @@ const addRasterOverlay = (
   // TODO maxzoom 19 only for snow overlay
 };
 
-const addClimbingOverlay = (style: StyleSpecification, map: Map) => {
-  style.sources.climbing = EMPTY_GEOJSON_SOURCE;
-  style.layers.push(...climbingLayers); // must be also in `layersWithOsmId` because of hover effect
-  style.sprite = [...OSMAPP_SPRITE, CLIMBING_SPRITE];
-
-  fetchCrags().then(
-    (geojson) => {
-      const geojsonSource = map.getSource('climbing') as GeoJSONSource;
-      geojsonSource?.setData(geojson); // TODO can be undefined at first map render
-    },
-    (error) => {
-      console.warn('Climbing Layer failed to fetch.', error); // eslint-disable-line no-console
-    },
-  );
-};
-
 const addOverlaysToStyle = (
   map: Map,
   style: StyleSpecification,
@@ -90,7 +75,7 @@ const addOverlaysToStyle = (
     .forEach((key: string) => {
       switch (key) {
         case 'climbing':
-          addClimbingOverlay(style, map);
+          addClimbingTilesSource(style);
           break;
 
         case 'indoor':
@@ -126,6 +111,7 @@ export const useUpdateStyle = createMapEffectHook(
 
     const style = cloneDeep(getBaseStyle(key, currentTheme));
     addOverlaysToStyle(map, style, overlays, currentTheme);
+    style.projection = { type: 'globe' };
     map.setStyle(style, { diff: mapLoaded });
 
     const languageControl = new OpenMapTilesLanguage({
