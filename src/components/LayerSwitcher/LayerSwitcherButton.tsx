@@ -7,7 +7,9 @@ import { t } from '../../services/intl';
 import { useMobileMode } from '../helpers';
 import { convertHexToRgba } from '../utils/colorUtils';
 
-const StyledLayerSwitcher = styled.button<{ $isMobileMode: boolean }>`
+const StyledLayerSwitcher = styled('button', {
+  shouldForwardProp: (prop) => prop !== '$isMobileMode',
+})<{ $isMobileMode: boolean }>`
   margin: 0;
   padding: 0;
   ${({ $isMobileMode }) =>
