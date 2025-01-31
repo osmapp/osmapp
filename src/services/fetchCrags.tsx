@@ -183,13 +183,6 @@ export const cragsToGeojson = (response: any): Feature[] => {
 
 // on CZ 48,11,51,19 makes 12 MB   (only crags is 700kB)
 export const fetchCrags = async () => {
-  const tile = await fetchJson('/api/climbing-tiles/tile', { nocache: true });
-  publishDbgObject('fetchCrags', tile);
-  return {
-    type: 'FeatureCollection',
-    features: tile,
-  } as GeoJSON.FeatureCollection;
-
   const query = `[out:json][timeout:25];
     (
       nwr["climbing"](49.64474,14.21855,49.67273,14.28025);

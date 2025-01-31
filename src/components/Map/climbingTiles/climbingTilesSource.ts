@@ -1,16 +1,15 @@
 import { GeoJSONSource } from 'maplibre-gl';
-import { fetchJson } from '../../../../services/fetch';
-import { EMPTY_GEOJSON_SOURCE, OSMAPP_SPRITE } from '../../consts';
-import { getGlobalMap } from '../../../../services/mapStorage';
+import { fetchJson } from '../../../services/fetch';
+import { EMPTY_GEOJSON_SOURCE, OSMAPP_SPRITE } from '../consts';
+import { getGlobalMap } from '../../../services/mapStorage';
 import {
   CLIMBING_SPRITE,
+  CLIMBING_TILES_SOURCE,
   climbingLayers,
-} from '../../styles/layers/climbingLayers';
+} from './climbingLayers';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
-import { Tile } from '../../../../types';
+import { Tile } from '../../../types';
 import { computeTiles } from './computeTiles';
-
-const SOURCE_NAME = 'climbing-tiles';
 
 const getTileJson = async ({ z, x, y }: Tile) => {
   const data = await fetchJson(`/api/climbing-tiles/tile?z=${z}&x=${x}&y=${y}`);
@@ -30,11 +29,11 @@ const updateData = async () => {
 
   const features = [];
   for (const tile of tiles) {
-    const tileFeatures = await getTileJson(tile);
+    const tileFeatures = await getTileJson(tile); // TODO consider showing results after each tile
     features.push(...tileFeatures);
   }
 
-  map?.getSource<GeoJSONSource>(SOURCE_NAME)?.setData({
+  map?.getSource<GeoJSONSource>(CLIMBING_TILES_SOURCE)?.setData({
     type: 'FeatureCollection' as const,
     features,
   });
@@ -43,14 +42,9 @@ const updateData = async () => {
 let eventsAdded = false;
 
 export const addClimbingTilesSource = (style: StyleSpecification) => {
-  style.sources[SOURCE_NAME] = EMPTY_GEOJSON_SOURCE;
+  style.sources[CLIMBING_TILES_SOURCE] = EMPTY_GEOJSON_SOURCE;
   style.sprite = [...OSMAPP_SPRITE, CLIMBING_SPRITE];
-  style.layers.push(
-    ...climbingLayers.map((x) => ({
-      ...x,
-      source: SOURCE_NAME,
-    })),
-  ); // must be also in `layersWithOsmId` because of hover effect
+  style.layers.push(...climbingLayers); // must be also in `layersWithOsmId` because of hover effect
 
   if (!eventsAdded) {
     const map = getGlobalMap();

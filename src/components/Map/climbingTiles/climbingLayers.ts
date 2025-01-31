@@ -4,7 +4,9 @@ import {
   SymbolLayerSpecification,
 } from '@maplibre/maplibre-gl-style-spec';
 import type { DataDrivenPropertyValueSpecification } from 'maplibre-gl';
-import { AREA, CRAG } from '../../MapFooter/ClimbingLegend';
+import { AREA, CRAG } from '../MapFooter/ClimbingLegend';
+
+export const CLIMBING_TILES_SOURCE = 'climbing-tiles';
 
 export const CLIMBING_SPRITE = {
   id: 'climbing',
@@ -101,16 +103,19 @@ const step = (
 
 export const routes: LayerSpecification[] = [
   {
-    id: 'climbing-3-routes-line',
+    id: 'climbing-routes-line',
     type: 'line',
-    source: 'climbing',
+    source: CLIMBING_TILES_SOURCE,
     minzoom: 16,
     filter: ['all', ['==', 'type', 'route']],
+    paint: {
+      'line-width': 2,
+    },
   },
   {
-    id: 'climbing-3-routes-circle',
+    id: 'climbing-routes-circle',
     type: 'circle',
-    source: 'climbing',
+    source: CLIMBING_TILES_SOURCE,
     minzoom: 16,
     filter: ['all', ['==', 'type', 'route']],
     paint: {
@@ -125,9 +130,9 @@ export const routes: LayerSpecification[] = [
     },
   } as LayerSpecification,
   {
-    id: 'climbing-3-routes-labels',
+    id: 'climbing-routes-labels',
     type: 'symbol',
-    source: 'climbing',
+    source: CLIMBING_TILES_SOURCE,
     minzoom: 19,
     filter: ['all', ['==', 'type', 'route']],
     layout: {
@@ -175,9 +180,9 @@ const cragSize = linearByRouteCount(0, 0.4, 50, 0.7);
 const cragSizeBig = 1;
 
 const mixed: LayerSpecification = {
-  id: 'climbing-1-mixed',
+  id: 'climbing-crags-and-areas',
   type: 'symbol',
-  source: 'climbing',
+  source: CLIMBING_TILES_SOURCE,
   maxzoom: 20,
   filter: ['all', ['==', 'type', 'group']],
   layout: {

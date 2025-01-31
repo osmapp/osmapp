@@ -1,6 +1,6 @@
 import { LngLat } from 'maplibre-gl';
-import { Tile } from '../../../../types';
-import { publishDbgObject } from '../../../../utils';
+import { Tile } from '../../../types';
+import { publishDbgObject } from '../../../utils';
 
 /*
     -180          +180  = x = longitude
@@ -32,11 +32,8 @@ export const computeTiles = (
   northWest: LngLat,
   southEast: LngLat,
 ): Tile[] => {
-  console.log(southEast.toArray(), northWest.toArray());
   const nwTile = getTile(z, northWest);
   const seTile = getTile(z, southEast);
-
-  // TODO for zoom 0 it gets over bounds
 
   const tiles = [];
   for (let x = nwTile.x; x <= seTile.x; x++) {
@@ -47,7 +44,6 @@ export const computeTiles = (
 
   const asString = tiles.map(({ z, x, y }) => `${z}/${x}/${y}`);
   publishDbgObject('climbingTiles', asString);
-  console.log(asString);
 
   return tiles;
 };
