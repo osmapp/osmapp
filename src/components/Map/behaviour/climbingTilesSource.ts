@@ -7,30 +7,33 @@ import {
   climbingLayers,
 } from '../styles/layers/climbingLayers';
 import type { StyleSpecification } from '@maplibre/maplibre-gl-style-spec';
+import { publishDbgObject } from '../../../utils';
+
+export type Tile = { z: number; x: number; y: number };
 
 const SOURCE_NAME = 'climbing-tiles';
 
 const tilesCache = {};
-const getCacheKey = (z, x, y) => `${z}/${x}/${y}`;
+const getCacheKey = ({ z, x, y }: Tile) => `${z}/${x}/${y}`;
 
-async function fetchTile(z, x, y) {
+const fetchTile = async ({ z, x, y }: Tile) => {
   const data = await fetchJson(
     `/api/climbing-tiles/tile?z=${z}&x=${x}&y=${y}`,
     { nocache: true },
   );
   return data.features || [];
-}
+};
 
-async function getTileJson(z, x, y) {
-  const key = getCacheKey(z, x, y);
+const getTileJson = async ({ z, x, y }: Tile) => {
+  const key = getCacheKey({ z, x, y });
   if (tilesCache[key]) {
     return tilesCache[key];
   }
 
-  const tile = await fetchTile(z, x, y);
+  const tile = await fetchTile({ z, x, y });
   tilesCache[key] = tile;
   return tile;
-}
+};
 
 /*
     -180          +180  = x = longitude
@@ -48,20 +51,20 @@ const getTile = (z: number, { lng, lat }: LngLat) => {
   const correction = 1 / Math.cos(yRad); // on pole 90° = infinity
   const yNorm = (1 - Math.log(Math.tan(yRad) + correction) / Math.PI) / 2; // defined on 0°-85°
   const y = Math.floor(yNorm * Math.pow(2, z));
-  return { x, y, z };
+  return { z, x, y };
 };
 
-async function updateGeoJSONSource() {
-  const map = getGlobalMap();
-  const mapZoom = map.getZoom();
-  const z = mapZoom >= 12 ? 12 : mapZoom >= 9 ? 9 : mapZoom >= 6 ? 6 : 0; //Math.floor(mapZoom);
+const computeTiles = (
+  z: number,
+  northWest: LngLat,
+  southEast: LngLat,
+): Tile[] => {
+  const nwTile = getTile(z, northWest);
+  const seTile = getTile(z, southEast);
 
-  const bounds = map.getBounds();
-  const nwTile = getTile(z, bounds.getNorthWest());
-  const seTile = getTile(z, bounds.getSouthEast());
+  // TODO for zoom 0 it gets over bounds
 
   const tiles = [];
-  // tiles.push({ z, x: nwTile.x, y: nwTile.y });
   for (let x = nwTile.x; x <= seTile.x; x++) {
     for (let y = nwTile.y; y <= seTile.y; y++) {
       if (x >= 0 && y >= 0) {
@@ -69,25 +72,34 @@ async function updateGeoJSONSource() {
       }
     }
   }
-  console.log(
-    `tiles: ${tiles.map(({ z, x, y }) => getCacheKey(z, x, y)).join(', ')}`,
-  );
+
+  publishDbgObject('climbingTiles', tiles.map(getCacheKey));
+
+  return tiles;
+};
+
+const updateData = async () => {
+  const map = getGlobalMap();
+  const mapZoom = map.getZoom();
+  const z = mapZoom >= 12 ? 12 : mapZoom >= 9 ? 9 : mapZoom >= 6 ? 6 : 0;
+
+  const bounds = map.getBounds();
+  const northWest = bounds.getNorthWest();
+  const southEast = bounds.getSouthEast();
+
+  const tiles = computeTiles(z, northWest, southEast);
 
   const features = [];
-  // const tileFeatures = await getTileData(7, 69, 43);
-  // features.push(...tileFeatures);
   for (const tile of tiles) {
-    const tileFeatures = await getTileJson(tile.z, tile.x, tile.y);
+    const tileFeatures = await getTileJson(tile);
     features.push(...tileFeatures);
   }
-
-  console.log({ features });
 
   map.getSource<GeoJSONSource>(SOURCE_NAME).setData({
     type: 'FeatureCollection' as const,
     features,
   });
-}
+};
 
 let added = false;
 
@@ -103,8 +115,8 @@ export const addClimbingTilesSource = (style: StyleSpecification) => {
 
   if (!added) {
     const map = getGlobalMap();
-    map.on('load', updateGeoJSONSource);
-    map.on('moveend', updateGeoJSONSource);
+    map.on('load', updateData);
+    map.on('moveend', updateData);
     added = true;
   }
 };

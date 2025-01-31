@@ -60,8 +60,17 @@ const optimizeGeojson = (geojson: FeatureCollection, bbox: BBox) => {
   };
 };
 
-const fetchFromDb = async ([z, x, y]: TileNumber) => {
-  if (z > 12) throw new Error('Zoom 12 is maximum (with all details)');
+const TILES_CONFIG = {
+  0: { optimized: true, routes: false },
+  6: { optimized: true, routes: false },
+  9: { optimized: false, routes: false },
+  12: { optimized: false, routes: true },
+};
+
+export const getClimbingTile = async ([z, x, y]: TileNumber) => {
+  if (z > 12) {
+    throw new Error('Zoom 12 is maximum (with all details)');
+  }
   const isDetails = z == 12;
 
   const start = performance.now();
@@ -104,8 +113,4 @@ const fetchFromDb = async ([z, x, y]: TileNumber) => {
   );
 
   return JSON.stringify(optimizedGeojson);
-};
-
-export const climbingTile = async ([z, x, y]: TileNumber) => {
-  return await fetchFromDb([z, x, y]);
 };
