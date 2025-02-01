@@ -16,7 +16,7 @@ export const TextMarker = ({
   hasPin = true,
 }: TextMarkerProps) => (
   <svg display="block" height={height} width={width} viewBox="0 0 27 41">
-    <g fill-rule="nonzero">
+    <g fillRule="nonzero">
       {hasShadow && (
         <g transform="translate(3.0, 29.0)" fill="#000000">
           <ellipse
