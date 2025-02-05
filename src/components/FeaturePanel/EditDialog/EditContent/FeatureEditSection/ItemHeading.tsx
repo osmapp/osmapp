@@ -15,7 +15,7 @@ export const ItemHeading = () => {
       mb={2}
     >
       <Typography variant="h6">{tags.name || presetLabel || ' '}</Typography>
-      <Stack direction="row" alignItems="center" gap={0.5}>
+      <Stack direction="row" alignItems="center" gap={1}>
         <Typography variant="caption" color="secondary">
           {shortId}
         </Typography>
