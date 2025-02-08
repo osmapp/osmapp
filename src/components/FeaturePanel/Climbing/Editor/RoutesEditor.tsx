@@ -155,6 +155,10 @@ export const RoutesEditor = ({
       ...loadedPhotos,
       [photoPath]: { ...loadedPhotos[photoPath], [photoResolution]: true },
     });
+    console.log('___ setLoadedPhotos', {
+      ...loadedPhotos,
+      [photoPath]: { ...loadedPhotos[photoPath], [photoResolution]: true },
+    });
     loadPhotoRelatedData();
     preloadOtherPhotos();
     setIsPhotoLoading(false);
