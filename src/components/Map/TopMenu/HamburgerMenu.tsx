@@ -3,7 +3,7 @@ import TerrainIcon from '@mui/icons-material/Terrain';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import BrightnessHighIcon from '@mui/icons-material/BrightnessHigh';
 import React, { useEffect, useState } from 'react';
-import { Menu, MenuItem } from '@mui/material';
+import { Menu, MenuItem, Typography } from '@mui/material';
 import CreateIcon from '@mui/icons-material/Create';
 import HelpIcon from '@mui/icons-material/Help';
 import styled from '@emotion/styled';
@@ -198,13 +198,24 @@ export const HamburgerMenu = () => {
         open={opened}
         onClose={close}
       >
-        <ThemeSelection />
-        <EditLink closeMenu={close} />
-        <StyledDivider />
-        <InstallLink closeMenu={close} />
         <AboutLink closeMenu={close} />
+        <EditLink closeMenu={close} />
+        <InstallLink closeMenu={close} />
         <GithubLink closeMenu={close} />
         <StyledDivider />
+        {isOpenClimbing && [
+          <Typography variant="caption" ml={2} key="climbing-header">
+            Climbing
+          </Typography>,
+          <ClimbingAreasLink closeMenu={close} key="climbing-areas" />,
+          <ClimbingGradesTableLink closeMenu={close} key="climbing-grades" />,
+        ]}
+        <StyledDivider />
+        <Typography variant="caption" ml={2}>
+          Settings
+        </Typography>
+        <ThemeSelection />
+
         <LangSwitcher />
       </Menu>
       <HamburgerIconButton anchorRef={anchorRef} onClick={open} />
