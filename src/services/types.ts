@@ -19,6 +19,7 @@ export type ImageDefFromTag = {
   v: string;
   instant: boolean; // true = no API call needed
   path?: PathType;
+  // TODO: points
   memberPaths?: MemberPath[]; // merged on relation
 };
 export type ImageDefFromCenter = {
