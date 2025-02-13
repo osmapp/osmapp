@@ -67,7 +67,7 @@ export const AddMemberForm = ({
   const defaultTags = getDefaultTags();
 
   const { addFeature, items, setCurrent, current } = useEditContext();
-  const { members, setMembers, tags, setShortId } = useCurrentItem();
+  const { members, setMembers, tags, convertToRelation } = useCurrentItem();
   const [showInput, setShowInput] = React.useState(false);
   const [label, setLabel] = React.useState('');
   const isClimbingCrag = tags.climbing === 'crag';
@@ -133,9 +133,8 @@ export const AddMemberForm = ({
     return; // TODO so far, we need a node (with coordinates) for adding a new node
   }
 
-  const convertToRelation = () => {
-    const newShortId = `r${getNewId()}`;
-    setShortId(newShortId); // TODO duplicate item instead and add `redirect=relation/123` tag
+  const handleConvertToRelation = async () => {
+    const newShortId = await convertToRelation();
     setCurrent(newShortId);
   };
 
@@ -162,7 +161,7 @@ export const AddMemberForm = ({
           icon={null}
           action={
             <Button
-              onClick={convertToRelation}
+              onClick={handleConvertToRelation}
               color="inherit"
               variant="text"
               size="small"
