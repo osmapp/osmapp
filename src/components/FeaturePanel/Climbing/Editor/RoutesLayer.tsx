@@ -7,6 +7,7 @@ import { RouteFloatingMenu } from './RouteFloatingMenu';
 import { RouteMarks } from './RouteMarks';
 import { getMouseFromPositionInImage } from '../utils/mousePositionUtils';
 import { DIALOG_TOP_BAR_HEIGHT } from '../config';
+import { MockedPoints } from './MockedPoints';
 
 type RouteRenders = { route: React.ReactNode; marks: React.ReactNode };
 
@@ -184,6 +185,8 @@ export const RoutesLayer = ({
       {sortedRoutes.selected.map((item) => item.marks)}
       {sortedRoutes.hovered.map((item) => item.route)}
       {sortedRoutes.hovered.map((item) => item.marks)}
+
+      <MockedPoints />
     </Svg>
   );
 };
