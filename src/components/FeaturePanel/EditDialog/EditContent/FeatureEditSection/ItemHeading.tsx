@@ -2,9 +2,14 @@ import { useCurrentItem } from './CurrentContext';
 import { Stack, Typography } from '@mui/material';
 import { getOsmTypeFromShortId, NwrIcon } from '../../../NwrIcon';
 import React from 'react';
+import styled from '@emotion/styled';
+
+const StyledTypography = styled(Typography)<{ $deleted: boolean }>`
+  ${({ $deleted }) => $deleted && 'text-decoration: line-through;'}
+`;
 
 export const ItemHeading = () => {
-  const { shortId, tags, presetLabel } = useCurrentItem();
+  const { shortId, tags, presetLabel, toBeDeleted } = useCurrentItem();
 
   return (
     <Stack
@@ -14,7 +19,9 @@ export const ItemHeading = () => {
       alignItems="center"
       mb={2}
     >
-      <Typography variant="h6">{tags.name || presetLabel || ' '}</Typography>
+      <StyledTypography variant="h6" $deleted={toBeDeleted}>
+        {tags.name || presetLabel || ' '}
+      </StyledTypography>
       <Stack direction="row" alignItems="center" gap={0.5}>
         <Typography variant="caption" color="secondary">
           {shortId}

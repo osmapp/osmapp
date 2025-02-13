@@ -10,6 +10,11 @@ import {
 import { useEditContext } from '../EditContext';
 import React from 'react';
 import { getOsmTypeFromShortId, NwrIcon } from '../../NwrIcon';
+import { EditDataItem } from '../useEditItems';
+
+const StyledTypography = styled(Typography)<{ $deleted: boolean }>`
+  ${({ $deleted }) => $deleted && 'text-decoration: line-through;'}
+`;
 
 const StyledTabs = styled(Tabs)`
   border-color: ${({ theme }) => theme.palette.divider};
@@ -38,7 +43,12 @@ const StyledTabs = styled(Tabs)`
   }
 `;
 
-const TabLabel = ({ item: { shortId, tags, presetLabel } }) => (
+type TableLabelProps = {
+  item: EditDataItem;
+};
+const TabLabel = ({
+  item: { shortId, tags, presetLabel, toBeDeleted },
+}: TableLabelProps) => (
   <Stack direction="column" alignItems="flex-start" width="100%">
     <Stack
       direction="row"
@@ -47,9 +57,13 @@ const TabLabel = ({ item: { shortId, tags, presetLabel } }) => (
       justifyContent="space-between"
       width="100%"
     >
-      <Typography variant="button" whiteSpace="nowrap">
+      <StyledTypography
+        variant="button"
+        whiteSpace="nowrap"
+        $deleted={toBeDeleted}
+      >
         {tags.name ?? shortId}
-      </Typography>
+      </StyledTypography>
       <NwrIcon osmType={getOsmTypeFromShortId(shortId)} />
     </Stack>
     <Typography variant="caption" textTransform="lowercase" whiteSpace="nowrap">

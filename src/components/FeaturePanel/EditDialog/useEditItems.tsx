@@ -6,6 +6,9 @@ import { useMemo, useState } from 'react';
 import { publishDbgObject } from '../../../utils';
 import { findPreset } from '../../../services/tagging/presets';
 import { getPresetTranslation } from '../../../services/tagging/translations';
+import { getNewId } from '../../../services/getCoordsFeature';
+import { fetchParentFeatures } from '../../../services/osm/fetchParentFeatures';
+import { fetchWays } from '../../../services/osm/fetchWays';
 
 export type TagsEntries = [string, string][];
 
@@ -35,6 +38,7 @@ export type EditDataItem = DataItem & {
   setShortId: SetShortId;
   setNodeLonLat: (lonLat: LonLat) => void;
   toggleToBeDeleted: () => void;
+  convertToRelation: ConvertToRelation;
 };
 
 const buildDataItem = (feature: Feature): DataItem => {
@@ -48,7 +52,7 @@ const buildDataItem = (feature: Feature): DataItem => {
       feature.memberFeatures?.map((memberFeature) => ({
         shortId: getShortId(memberFeature.osmMeta),
         role: memberFeature.osmMeta.role,
-        label: getLabel(memberFeature), // TODO what if user updates the tags ?
+        label: getLabel(memberFeature),
       })) ??
       feature.members?.map((member) => ({
         shortId: getShortId({ type: member.type, id: member.ref }),
@@ -117,6 +121,59 @@ const setDataItemFactory =
       }
       return newData;
     });
+  };
+
+type ConvertToRelation = () => Promise<string>;
+const convertToRelationFactory =
+  (setData: Setter<DataItem[]>, shortId: string): ConvertToRelation =>
+  async () => {
+    const [parentFeatures, waysFeatures] = await Promise.all([
+      fetchParentFeatures(getApiId(shortId)),
+      fetchWays(getApiId(shortId)),
+    ]);
+
+    if (waysFeatures.length > 0) {
+      throw new Error(`Can't convert node ${shortId} which is part of a way`);
+    }
+
+    const newShortId = `r${getNewId()}`;
+    setData((prevData) => {
+      // TODO - don't delete natural=peak - leave it as node
+      const newData = prevData.map((item) =>
+        item.shortId === shortId ? { ...item, toBeDeleted: true } : item,
+      );
+      const currentItem = prevData.find((item) => item.shortId === shortId);
+
+      const newRelation: DataItem = {
+        shortId: newShortId,
+        version: undefined,
+        tagsEntries: currentItem.tagsEntries,
+        toBeDeleted: false,
+        members: [],
+        nodeLonLat: undefined,
+      };
+
+      // update member id in all parent relations
+      const parentItems = parentFeatures.map((feature) => {
+        const dataItem = buildDataItem(feature);
+        return {
+          ...dataItem,
+          members: dataItem.members.map((member) =>
+            member.shortId === shortId
+              ? {
+                  ...member,
+                  shortId: newShortId,
+                  label: getName(currentItem) ?? newShortId,
+                }
+              : member,
+          ),
+        };
+      });
+
+      return [...newData, ...parentItems, newRelation];
+    });
+
+    return newShortId;
   };
 
 type SetTagsEntries = (updateFn: (prev: TagsEntries) => TagsEntries) => void;
@@ -199,6 +256,7 @@ export const useEditItems = (originalFeature: Feature) => {
           setNodeLonLat: setNodeLonLatFactory(setDataItem),
           presetKey,
           presetLabel: getPresetTranslation(presetKey),
+          convertToRelation: convertToRelationFactory(setData, shortId),
         };
         // TODO maybe keep reference to original EditDataItem if DataItem didnt change? #performance
       }),
